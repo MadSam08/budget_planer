@@ -1,0 +1,9 @@
+src/.vs/
+.vs/
+src/BudgetPlanerUI/obj/
+src/BudgetPlanerUI.Client/obj/
+src/BudgetPlaner.Api/obj/
+BudgetPlaner.Models/obj/
+src/BudgetPlanerUI.Client/bin/
+src/BudgetPlaner.Api/bin/
+BudgetPlaner.Models/bin/
