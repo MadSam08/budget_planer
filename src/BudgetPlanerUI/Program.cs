@@ -1,4 +1,4 @@
-using BudgetPlanerUI.Components;
+using BudgetPlaner.UI.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +29,6 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(BudgetPlanerUI.Client._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(BudgetPlaner.UI.Client._Imports).Assembly);
 
 app.Run();

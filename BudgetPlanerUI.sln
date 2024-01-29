@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{3CDAFEEC-6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BudgetPlaner.UI", "src\BudgetPlanerUI\BudgetPlaner.UI.csproj", "{C5C57360-B169-42F2-8C1F-A3E5040644A2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BudgetPlanerUI.Client", "src\BudgetPlanerUI.Client\BudgetPlanerUI.Client.csproj", "{C5AA4C92-892E-43CC-9B8B-5332EA87BED6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BudgetPlaner.UI.Client", "src\BudgetPlanerUI.Client\BudgetPlaner.UI.Client.csproj", "{C5AA4C92-892E-43CC-9B8B-5332EA87BED6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BudgetPlaner.Api", "src\BudgetPlaner.Api\BudgetPlaner.Api.csproj", "{86818BFD-0B4F-461A-9E45-2D8474F523F9}"
 EndProject
