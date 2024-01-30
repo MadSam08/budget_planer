@@ -5,6 +5,11 @@ namespace BudgetPlaner.Api.DatabaseContext;
 
 public class BudgetPlanerContext : DbContext
 {
+    public BudgetPlanerContext()
+    {
+        
+    }
+    
     public BudgetPlanerContext(DbContextOptions<BudgetPlanerContext> options) : base(options)
     {
     }
@@ -18,6 +23,12 @@ public class BudgetPlanerContext : DbContext
             .HasOne(x => x.Currency)
             .WithMany()
             .HasForeignKey(c => c.CurrencyId);
+        modelBuilder.Entity<CreditEntity>()
+            .HasMany(x => x.InterestRates)
+            .WithOne()
+            .HasForeignKey(x => x.CreditId);
+
+        modelBuilder.Entity<CreditInterestRate>().HasKey(x => x.Id);
 
         modelBuilder.Entity<CurrencyEntity>().HasKey(x => x.Id);
         modelBuilder.Entity<CurrencyEntity>().Property(x => x.Name).IsRequired();

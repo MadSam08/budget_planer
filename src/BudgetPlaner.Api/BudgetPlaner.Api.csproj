@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.9.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
@@ -24,6 +26,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+    <PackageReference Include="Sqids" Version="3.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
@@ -32,7 +35,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="EndpointDefinitions\" />
+    <EmbeddedResource Update="ExceptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExceptionMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ExceptionMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExceptionMessages.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

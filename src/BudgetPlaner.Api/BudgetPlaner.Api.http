@@ -1,6 +1,49 @@
-@BudgetPlaner.Api_HostAddress = http://localhost:5240
 
-GET {{BudgetPlaner.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+
+POST https://localhost:7064/budget-planer/account/login
+accept: application/json
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "Admin123@"
+}
 
 ###
+
+@BudgetPlaner.Api_HostAddress = http://localhost:5240
+
+GET /categories HTTP/1.1
+Content-Type: application/json
+Host: {{BudgetPlaner.Api_HostAddress}}
+###
+
+GET /categories/123 HTTP/1.1
+Content-Type: application/json
+Host: {{BudgetPlaner.Api_HostAddress}}
+
+###
+
+POST /categories HTTP/1.1
+Host: <your-server-address>
+Content-Type: application/json
+
+{
+  "property1" : "value1",
+  "property2" : "value2"
+}
+
+###
+
+PUT /categories/123 HTTP/1.1
+Host: {{BudgetPlaner.Api_HostAddress}}
+Content-Type: application/json
+
+{
+  "property1" : "new value",
+  "property2" : "new value"
+}
+
+###
+DELETE /categories/123 HTTP/1.1
+Host:{{BudgetPlaner.Api_HostAddress}}

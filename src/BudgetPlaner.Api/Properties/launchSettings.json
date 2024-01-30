@@ -13,7 +13,7 @@
     "https": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "budget-planer/swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

@@ -3,8 +3,7 @@
 public record BaseEntity
 {
     public int Id { get; set; }
-    
-    public int UserId { get; set; }
+    public required string UserId { get; set; }
     
     public DateTime CreateDate { get; set; }
     

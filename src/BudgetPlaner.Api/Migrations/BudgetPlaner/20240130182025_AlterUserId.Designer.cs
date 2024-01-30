@@ -3,6 +3,7 @@ using System;
 using BudgetPlaner.Api.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BudgetPlaner.Api.Migrations.BudgetPlaner
 {
     [DbContext(typeof(BudgetPlanerContext))]
-    partial class BudgetPlanerContextModelSnapshot : ModelSnapshot
+    [Migration("20240130182025_AlterUserId")]
+    partial class AlterUserId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

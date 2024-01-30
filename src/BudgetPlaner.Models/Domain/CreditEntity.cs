@@ -23,4 +23,6 @@ public record CreditEntity : BaseEntity
     
     public virtual CurrencyEntity? Currency { get; set; }
     
+    public virtual ICollection<CreditInterestRate>? InterestRates { get; set; }
+    
 }
