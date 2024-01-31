@@ -2,7 +2,7 @@
 
 namespace BudgetPlaner.Models.ApiResponse;
 
-public class CategoryModel
+public record CategoryModel
 {
     public required string Id { get; set; }
     public required string Name { get; set; }

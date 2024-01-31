@@ -1,4 +1,5 @@
-﻿using BudgetPlaner.Models.Domain;
+﻿using BudgetPlaner.Api.Constants;
+using BudgetPlaner.Models.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace BudgetPlaner.Api.DatabaseContext;
@@ -17,23 +18,28 @@ public class BudgetPlanerContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<CategoryEntity>().HasKey(x => x.Id);
+        modelBuilder.Entity<CategoryEntity>().ToTable(TableNames.Category);
         
-        modelBuilder.Entity<CreditEntity>().HasKey(x => x.Id);
-        modelBuilder.Entity<CreditEntity>()
+        modelBuilder.Entity<LoanEntity>().HasKey(x => x.Id);
+        modelBuilder.Entity<LoanEntity>().ToTable(TableNames.Loan);
+        modelBuilder.Entity<LoanEntity>()
             .HasOne(x => x.Currency)
             .WithMany()
             .HasForeignKey(c => c.CurrencyId);
-        modelBuilder.Entity<CreditEntity>()
-            .HasMany(x => x.InterestRates)
+        modelBuilder.Entity<LoanEntity>()
+            .HasMany(x => x.ScheduledRates)
             .WithOne()
-            .HasForeignKey(x => x.CreditId);
+            .HasForeignKey(x => x.LoanId);
 
-        modelBuilder.Entity<CreditInterestRate>().HasKey(x => x.Id);
-
+        modelBuilder.Entity<LoanInterestRateEntity>().HasKey(x => x.Id);
+        modelBuilder.Entity<LoanInterestRateEntity>().ToTable(TableNames.LoanInterestRate);
+        
         modelBuilder.Entity<CurrencyEntity>().HasKey(x => x.Id);
         modelBuilder.Entity<CurrencyEntity>().Property(x => x.Name).IsRequired();
+        modelBuilder.Entity<CurrencyEntity>().ToTable(TableNames.Currency);
 
         modelBuilder.Entity<IncomeEntity>().HasKey(x => x.Id);
+        modelBuilder.Entity<IncomeEntity>().ToTable(TableNames.Income);
         modelBuilder.Entity<IncomeEntity>().HasOne(x => x.Currency)
             .WithMany()
             .HasForeignKey(x => x.CurrencyId);
@@ -42,6 +48,7 @@ public class BudgetPlanerContext : DbContext
             .HasForeignKey(x => x.CategoryId);
         
         modelBuilder.Entity<SpendingEntity>().HasKey(x => x.Id);
+        modelBuilder.Entity<SpendingEntity>().ToTable(TableNames.Spending);
         modelBuilder.Entity<SpendingEntity>().HasOne(x => x.Currency)
             .WithMany()
             .HasForeignKey(x => x.CurrencyId);

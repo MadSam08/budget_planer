@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using BudgetPlaner.Api.Bootstrap;
+﻿using BudgetPlaner.Api.Bootstrap;
 using BudgetPlaner.Api.Constants.EndpointNames;
 using BudgetPlaner.Api.DatabaseContext;
 using BudgetPlaner.Api.Extensions;
@@ -13,7 +12,7 @@ using Sqids;
 
 namespace BudgetPlaner.Api.EndpointDefinitions
 {
-    public class CategoryEndpointDefinition : IEndpointDefinition
+    public class CategoryEndpointDefinitions : IEndpointDefinition
     {
         private const string BasePath = $"{EndpointNames.BudgetBasePath}/{EndpointNames.CategoryPath}";
 
@@ -46,7 +45,7 @@ namespace BudgetPlaner.Api.EndpointDefinitions
 
         private static async Task<IResult> GetCategories([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
             [FromServices] IHttpContextAccessor httpContextAccessor,
-            [FromServices] SqidsEncoder<int> sqidsEncoder)
+            [FromServices] SqidsEncoder<int> sqidsEncoder, CancellationToken cancellationToken = default)
         {
             var userId = httpContextAccessor.GetUserIdFromClaims();
 
@@ -54,7 +53,7 @@ namespace BudgetPlaner.Api.EndpointDefinitions
                 return Results.BadRequest();
             
             var response = await unitOfWork.Repository<CategoryEntity>()
-                .Where(x => x.UserId.Equals(userId)).ToListAsync();
+                .Where(x => x.UserId.Equals(userId)).ToListAsync(cancellationToken: cancellationToken);
 
             return Results.Ok(response.MapToModel(sqidsEncoder));
         }
@@ -86,47 +85,72 @@ namespace BudgetPlaner.Api.EndpointDefinitions
                 return Results.BadRequest();
 
             entity.UserId = userId;
+            entity.CreateDate = DateTime.UtcNow;
+            entity.UpdateDate = DateTime.UtcNow;
+            
             await unitOfWork.Repository<CategoryEntity>().AddAsync(entity);
             await unitOfWork.Complete();
             return Results.NoContent();
         }
 
         private static async Task<IResult> UpdateCategory([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
+            [FromServices] IHttpContextAccessor httpContextAccessor,
             [FromServices] SqidsEncoder<int> sqidsEncoder, string id, [FromBody] CategoryModel categoryModel)
         {
             var idDecoded = sqidsEncoder.Decode(id).SingleOrDefault();
             if (idDecoded == 0) return Results.BadRequest();
 
+            var userId = httpContextAccessor.GetUserIdFromClaims();
+            
+            if (string.IsNullOrEmpty(userId))
+                return Results.BadRequest();
+            
             await unitOfWork.Repository<CategoryEntity>()
-                .UpdateAsync(x => x.Id == idDecoded, prop =>
+                .UpdateAsync(x => x.Id == idDecoded && x.UserId.Equals(userId), 
+                    prop =>
                     prop.SetProperty(c => c.Name, categoryModel.Name)
-                        .SetProperty(c => c.CategoryTypes, categoryModel.CategoryTypes));
+                        .SetProperty(c => c.CategoryTypes, categoryModel.CategoryTypes)
+                        .SetProperty(c => c.UpdateDate, DateTime.UtcNow));
 
             return Results.NoContent();
         }
 
         private static async Task<IResult> ArchiveCategory([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
+            [FromServices] IHttpContextAccessor httpContextAccessor,
             [FromServices] SqidsEncoder<int> sqidsEncoder, string id)
         {
             var idDecoded = sqidsEncoder.Decode(id).SingleOrDefault();
             if (idDecoded == 0) return Results.BadRequest();
+            
+            var userId = httpContextAccessor.GetUserIdFromClaims();
+            
+            if (string.IsNullOrEmpty(userId))
+                return Results.BadRequest();
 
             await unitOfWork.Repository<CategoryEntity>()
-                .UpdateAsync(x => x.Id == idDecoded, prop =>
-                    prop.SetProperty(c => c.IsDeleted, true));
+                .UpdateAsync(x => x.Id == idDecoded && x.UserId.Equals(userId), prop =>
+                    prop.SetProperty(c => c.IsDeleted, true)
+                        .SetProperty(c => c.UpdateDate, DateTime.UtcNow));
 
             return Results.NoContent();
         }
 
         private static async Task<IResult> RestoreCategory([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
+            [FromServices] IHttpContextAccessor httpContextAccessor,
             [FromServices] SqidsEncoder<int> sqidsEncoder, string id)
         {
             var idDecoded = sqidsEncoder.Decode(id).SingleOrDefault();
             if (idDecoded == 0) return Results.BadRequest();
+                
+            var userId = httpContextAccessor.GetUserIdFromClaims();
+            
+            if (string.IsNullOrEmpty(userId))
+                return Results.BadRequest();
 
             await unitOfWork.Repository<CategoryEntity>()
-                .UpdateAsync(x => x.Id == idDecoded, prop =>
-                    prop.SetProperty(c => c.IsDeleted, false));
+                .UpdateAsync(x => x.Id == idDecoded && x.UserId.Equals(userId), prop =>
+                    prop.SetProperty(c => c.IsDeleted, false)
+                        .SetProperty(c => c.UpdateDate, DateTime.UtcNow));
 
             return Results.NoContent();
         }

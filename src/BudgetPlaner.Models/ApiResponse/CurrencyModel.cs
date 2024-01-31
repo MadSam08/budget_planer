@@ -1,9 +1,9 @@
-﻿namespace BudgetPlaner.Models.Domain;
+﻿namespace BudgetPlaner.Models.ApiResponse;
 
-public record CurrencyEntity : BaseEntity
+public record CurrencyModel
 {
+    public string Id { get; set; }
     public required string Name { get; set; }
     public string? Code { get; set; }
     public decimal NationalBankRate { get; set; }
-    public bool IsDeleted { get; set; }
 }

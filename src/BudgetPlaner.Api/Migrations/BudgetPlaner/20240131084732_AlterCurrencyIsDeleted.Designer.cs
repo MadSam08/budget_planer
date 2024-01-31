@@ -3,6 +3,7 @@ using System;
 using BudgetPlaner.Api.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BudgetPlaner.Api.Migrations.BudgetPlaner
 {
     [DbContext(typeof(BudgetPlanerContext))]
-    partial class BudgetPlanerContextModelSnapshot : ModelSnapshot
+    [Migration("20240131084732_AlterCurrencyIsDeleted")]
+    partial class AlterCurrencyIsDeleted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,7 +55,93 @@ namespace BudgetPlaner.Api.Migrations.BudgetPlaner
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category", (string)null);
+                    b.ToTable("CategoryEntity");
+                });
+
+            modelBuilder.Entity("BudgetPlaner.Models.Domain.CreditEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("APR")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("AnnualRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("BankName")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Interest")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Period")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Principal")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("TotalValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.ToTable("CreditEntity");
+                });
+
+            modelBuilder.Entity("BudgetPlaner.Models.Domain.CreditInterestRate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreditId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("InterestPayType")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("InterestValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("PrincipalValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreditId");
+
+                    b.ToTable("CreditInterestRate");
                 });
 
             modelBuilder.Entity("BudgetPlaner.Models.Domain.CurrencyEntity", b =>
@@ -88,7 +177,7 @@ namespace BudgetPlaner.Api.Migrations.BudgetPlaner
 
                     b.HasKey("Id");
 
-                    b.ToTable("Currency", (string)null);
+                    b.ToTable("CurrencyEntity");
                 });
 
             modelBuilder.Entity("BudgetPlaner.Models.Domain.IncomeEntity", b =>
@@ -130,102 +219,7 @@ namespace BudgetPlaner.Api.Migrations.BudgetPlaner
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("Income", (string)null);
-                });
-
-            modelBuilder.Entity("BudgetPlaner.Models.Domain.LoanEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("APR")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("AnnualRate")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("BankName")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreditStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CurrencyId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Interest")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Period")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Principal")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CurrencyId");
-
-                    b.ToTable("Loan", (string)null);
-                });
-
-            modelBuilder.Entity("BudgetPlaner.Models.Domain.LoanInterestRateEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("InterestPayType")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("InterestValue")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("LoanId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Month")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("PrincipalValue")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LoanId");
-
-                    b.ToTable("LoanInterestRate", (string)null);
+                    b.ToTable("IncomeEntity");
                 });
 
             modelBuilder.Entity("BudgetPlaner.Models.Domain.SpendingEntity", b =>
@@ -267,7 +261,27 @@ namespace BudgetPlaner.Api.Migrations.BudgetPlaner
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("Spending", (string)null);
+                    b.ToTable("SpendingEntity");
+                });
+
+            modelBuilder.Entity("BudgetPlaner.Models.Domain.CreditEntity", b =>
+                {
+                    b.HasOne("BudgetPlaner.Models.Domain.CurrencyEntity", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+                });
+
+            modelBuilder.Entity("BudgetPlaner.Models.Domain.CreditInterestRate", b =>
+                {
+                    b.HasOne("BudgetPlaner.Models.Domain.CreditEntity", null)
+                        .WithMany("InterestRates")
+                        .HasForeignKey("CreditId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BudgetPlaner.Models.Domain.IncomeEntity", b =>
@@ -289,26 +303,6 @@ namespace BudgetPlaner.Api.Migrations.BudgetPlaner
                     b.Navigation("Currency");
                 });
 
-            modelBuilder.Entity("BudgetPlaner.Models.Domain.LoanEntity", b =>
-                {
-                    b.HasOne("BudgetPlaner.Models.Domain.CurrencyEntity", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Currency");
-                });
-
-            modelBuilder.Entity("BudgetPlaner.Models.Domain.LoanInterestRateEntity", b =>
-                {
-                    b.HasOne("BudgetPlaner.Models.Domain.LoanEntity", null)
-                        .WithMany("ScheduledRates")
-                        .HasForeignKey("LoanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BudgetPlaner.Models.Domain.SpendingEntity", b =>
                 {
                     b.HasOne("BudgetPlaner.Models.Domain.CategoryEntity", "Category")
@@ -328,9 +322,9 @@ namespace BudgetPlaner.Api.Migrations.BudgetPlaner
                     b.Navigation("Currency");
                 });
 
-            modelBuilder.Entity("BudgetPlaner.Models.Domain.LoanEntity", b =>
+            modelBuilder.Entity("BudgetPlaner.Models.Domain.CreditEntity", b =>
                 {
-                    b.Navigation("ScheduledRates");
+                    b.Navigation("InterestRates");
                 });
 #pragma warning restore 612, 618
         }

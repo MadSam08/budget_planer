@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BudgetPlaner.Api.EndpointDefinitions;
 
-public class IdentityEndpointDefinition : IEndpointDefinition
+public class IdentityEndpointDefinitions : IEndpointDefinition
 {
     private const string BasePath = $"{EndpointNames.BudgetBasePath}/{EndpointNames.AccountPath}";
     

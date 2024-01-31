@@ -6,21 +6,6 @@ namespace BudgetPlaner.Api.Mappers;
 
 public static class CategoryMapper
 {
-    public static IEnumerable<CategoryEntity> MapToEntity(this IEnumerable<CategoryModel> model, SqidsEncoder<int> sqids)
-    {
-        return model.Select(x =>
-        {
-            var single = sqids.Decode(x.Id).SingleOrDefault();
-            return new CategoryEntity
-            {
-                Id = single,
-                Name = x.Name,
-                UserId = "",
-                CategoryTypes = x.CategoryTypes
-            };
-        });
-    }
-    
     public static CategoryEntity MapToEntity(this CategoryModel model)
     {
         return new CategoryEntity

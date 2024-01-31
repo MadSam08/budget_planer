@@ -1,7 +1,11 @@
-﻿namespace BudgetPlaner.Models.Domain;
+﻿using BudgetPlaner.Models.Domain;
 
-public record CreditEntity : BaseEntity
+namespace BudgetPlaner.Models.ApiResponse;
+
+public record LoanModel
 {
+    public required string Id { get; set; }
+    public string? Name { get; set; }
     public int CurrencyId { get; set; }
     
     public string? BankName { get; set; }
@@ -14,15 +18,14 @@ public record CreditEntity : BaseEntity
     
     public decimal AnnualRate { get; set; }
     
+    public string? CurrencyName { get; set; }
+    
+    public CreditStatus CreditStatus { get; set; }
+    
     /// <summary>
     /// DAE
     /// </summary>
     public decimal APR { get; set; }
     
     public int Period { get; set; }
-    
-    public virtual CurrencyEntity? Currency { get; set; }
-    
-    public virtual ICollection<CreditInterestRate>? InterestRates { get; set; }
-    
 }

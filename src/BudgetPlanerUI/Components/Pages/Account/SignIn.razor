@@ -1,0 +1,48 @@
+﻿@page "/sign-in"
+
+@using Orientation = Microsoft.FluentUI.AspNetCore.Components.Orientation
+@layout RegistrationLayout
+@rendermode InteractiveAuto
+
+<EditForm OnInvalidSubmit="@HandleValidSubmit" Model="@SignInModel" FormName="budget-registration">
+    <DataAnnotationsValidator/>
+    <FluentValidationSummary/>
+
+    <FluentStack Orientation="Orientation.Vertical">
+        <div class="container">
+            <h1>Sign In</h1>
+ 
+            <label for="email">
+                <b>Email</b>
+            </label>
+            <FluentTextField Name="email"
+                             TextFieldType="TextFieldType.Email"
+                             bind-Value="@SignInModel.Email"
+                             Label="Email" Required/>
+            <FluentValidationMessage For="@(() => SignInModel.Email)"/>
+            
+            <label for="psw">
+                <b>Password</b>
+            </label>
+            <FluentTextField Name="password"
+                             TextFieldType="TextFieldType.Password"
+                             bind-Value="@SignInModel.Password"
+                             Placeholder="Enter Password"
+                             Label="Enter Password" Required/>
+            <FluentValidationMessage For="@(() => SignInModel.Password)"/>
+
+            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" class="registerbtn">Sign In</FluentButton>
+        </div>
+    </FluentStack>
+</EditForm>
+
+
+@code {
+    
+    [SupplyParameterFromForm] private SignInModel SignInModel { get; set; } = new("", "");
+
+    private void HandleValidSubmit(EditContext obj)
+    {
+        throw new NotImplementedException();
+    }
+}
