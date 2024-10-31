@@ -1,48 +1,28 @@
-﻿@page "/sign-in"
+﻿@layout RegistrationLayout
+@page "/account/sign-in"
 
-@using Orientation = Microsoft.FluentUI.AspNetCore.Components.Orientation
-@layout RegistrationLayout
-@rendermode InteractiveAuto
-
-<EditForm OnInvalidSubmit="@HandleValidSubmit" Model="@SignInModel" FormName="budget-registration">
+<EditForm Model="@SignInModel"  FormName="signIn">
     <DataAnnotationsValidator/>
-    <FluentValidationSummary/>
-
-    <FluentStack Orientation="Orientation.Vertical">
-        <div class="container">
-            <h1>Sign In</h1>
- 
-            <label for="email">
-                <b>Email</b>
-            </label>
-            <FluentTextField Name="email"
-                             TextFieldType="TextFieldType.Email"
-                             bind-Value="@SignInModel.Email"
-                             Label="Email" Required/>
-            <FluentValidationMessage For="@(() => SignInModel.Email)"/>
-            
-            <label for="psw">
-                <b>Password</b>
-            </label>
-            <FluentTextField Name="password"
-                             TextFieldType="TextFieldType.Password"
-                             bind-Value="@SignInModel.Password"
-                             Placeholder="Enter Password"
-                             Label="Enter Password" Required/>
-            <FluentValidationMessage For="@(() => SignInModel.Password)"/>
-
-            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" class="registerbtn">Sign In</FluentButton>
-        </div>
-    </FluentStack>
+    <MudGrid Class="d-flex justify-center flex-grow-1 gap-4 mt-5" Elevation="0">
+        <MudItem xs="12" sm="7">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="Email"
+                                  Variant="Variant.Outlined"
+                                  @bind-Value="SignInModel.Email"/>
+                    <MudTextField Label="Password"
+                                  Variant="Variant.Outlined"
+                                  @bind-Value="SignInModel.Password"
+                                  InputType="InputType.Password"/>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Sign-In</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
 </EditForm>
 
-
 @code {
-    
-    [SupplyParameterFromForm] private SignInModel SignInModel { get; set; } = new("", "");
-
-    private void HandleValidSubmit(EditContext obj)
-    {
-        throw new NotImplementedException();
-    }
+   [Parameter] public SignInModel SignInModel { get; set; }
 }

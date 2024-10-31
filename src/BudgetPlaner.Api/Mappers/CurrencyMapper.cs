@@ -1,4 +1,4 @@
-﻿using BudgetPlaner.Models.ApiResponse;
+﻿using BudgetPlaner.Models.Api;
 using BudgetPlaner.Models.Domain;
 using Sqids;
 

@@ -1,4 +1,4 @@
-﻿using BudgetPlaner.Models.ApiResponse;
+﻿using BudgetPlaner.Models.Api;
 using FluentValidation;
 using FluentValidation.Results;
 

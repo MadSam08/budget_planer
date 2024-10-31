@@ -1,2 +1,16 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
 
+<MudAlert Severity="Severity.Success">The reactor is running at optimum temperature</MudAlert>
+
+@code {
+   [CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+   protected override async Task OnInitializedAsync()
+   {
+      var user = await AuthenticationState;
+      var identity = user.User.Identity;
+   }
+}

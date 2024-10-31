@@ -1,4 +1,4 @@
-﻿namespace BudgetPlaner.Models.ApiResponse;
+﻿namespace BudgetPlaner.Models.Api;
 
 public record CurrencyModel
 {

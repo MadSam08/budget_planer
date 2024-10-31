@@ -7,9 +7,16 @@
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.JSInterop
 @using BudgetPlaner.UI
-@using BudgetPlaner.UI.Client
 @using BudgetPlaner.UI.Components
-@using ApexCharts
-@using Microsoft.FluentUI.AspNetCore.Components
+@using MudBlazor
 @using BudgetPlaner.UI.Components.Layout
-@using BudgetPlaner.Models.ApiResponse
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Authentication
+@using BudgetPlaner.Models.Api
+@using BudgetPlaner.UI.ApiClients.Identity
+@using Microsoft.AspNetCore.Identity.Data
+@using System.Security.Claims
+@using System.Globalization
+@using System.ComponentModel.DataAnnotations
+@using System.Text.RegularExpressions
+

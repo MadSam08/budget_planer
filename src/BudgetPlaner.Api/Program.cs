@@ -13,6 +13,11 @@ using Sqids;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthorization();
+
+// builder.Services
+//     .AddAuthentication(IdentityConstants.ApplicationScheme)
+//     .AddIdentityCookies();
+
 builder.Services.AddHttpContextAccessor();
 
 // Add services to the container.

@@ -5,7 +5,7 @@ using BudgetPlaner.Api.Extensions;
 using BudgetPlaner.Api.Mappers;
 using BudgetPlaner.Api.Repository.UnitOfWork;
 using BudgetPlaner.Api.Services.Credit;
-using BudgetPlaner.Models.ApiResponse;
+using BudgetPlaner.Models.Api;
 using BudgetPlaner.Models.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

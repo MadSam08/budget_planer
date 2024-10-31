@@ -1,6 +1,6 @@
-﻿namespace BudgetPlaner.Models.ApiResponse;
+﻿namespace BudgetPlaner.Models.Api;
 
-public record SpendingModel
+public record IncomeModel
 {
     public required string Id { get; set; }
     public int CurrencyId { get; set; }
@@ -12,7 +12,7 @@ public record SpendingModel
     /// <summary>
     ///     Gets or sets the actual date of income when it was received, not the date on it was inserted in the system.
     /// </summary>
-    public DateTime ActualDateOfSpending { get; set; }
+    public DateTime ActualDateOfIncome { get; set; }
     
     public string? CurrencyName { get; set; }
     public string? CategoryName { get; set; }

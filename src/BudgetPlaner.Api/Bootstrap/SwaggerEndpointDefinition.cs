@@ -26,7 +26,7 @@ public class SwaggerEndpointDefinition : IEndpointDefinition
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "ConfigurationAPI", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Budget Planner", Version = "v1" });
         });
     }
 }

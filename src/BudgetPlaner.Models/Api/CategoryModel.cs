@@ -1,6 +1,6 @@
 ﻿using BudgetPlaner.Models.Domain;
 
-namespace BudgetPlaner.Models.ApiResponse;
+namespace BudgetPlaner.Models.Api;
 
 public record CategoryModel
 {
