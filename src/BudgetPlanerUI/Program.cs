@@ -3,14 +3,12 @@ using BudgetPlaner.UI.Components;
 using BudgetPlaner.UI.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddCircuitOptions(options => { options.DetailedErrors = true; });
@@ -19,7 +17,6 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthorizationCore();
-builder.Services.AddMudServices();
 builder.Services.AddEndpointDefinitions();
 
 builder.Services.AddHttpClient<IIdentityService, IdentityService>(client =>

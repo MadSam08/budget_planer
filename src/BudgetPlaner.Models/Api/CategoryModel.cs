@@ -1,5 +1,4 @@
-﻿using BudgetPlaner.Models.Domain;
-
+﻿using BudgetPlaner.Domain;
 namespace BudgetPlaner.Models.Api;
 
 public record CategoryModel

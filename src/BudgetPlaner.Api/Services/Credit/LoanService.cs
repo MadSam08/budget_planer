@@ -1,7 +1,7 @@
 ﻿using BudgetPlaner.Api.Attributes;
 using BudgetPlaner.Api.DatabaseContext;
 using BudgetPlaner.Api.Repository.UnitOfWork;
-using BudgetPlaner.Models.Domain;
+using BudgetPlaner.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace BudgetPlaner.Api.Services.Credit;

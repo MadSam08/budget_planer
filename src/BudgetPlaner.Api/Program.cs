@@ -1,12 +1,16 @@
 using System.Reflection;
+using System.Text;
 using BudgetPlaner.Api.Bootstrap;
 using BudgetPlaner.Api.DatabaseContext;
 using BudgetPlaner.Api.Extensions;
 using BudgetPlaner.Api.Repository.UnitOfWork;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sqids;
 
@@ -14,9 +18,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthorization();
 
-// builder.Services
-//     .AddAuthentication(IdentityConstants.ApplicationScheme)
-//     .AddIdentityCookies();
+builder.Services
+    .AddAuthentication();
+    // .AddBearerToken(IdentityConstants.BearerScheme);
+
+builder.Services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme)
+    .Configure(options =>
+{
+    options.BearerTokenExpiration = TimeSpan.FromMinutes(10);
+});
 
 builder.Services.AddHttpContextAccessor();
 
@@ -34,9 +44,7 @@ builder.Services.AddSwaggerGen(options =>
 
     // Set custom schema name 
     options.CustomSchemaIds(x => x.FullName);
-
     options.DescribeAllParametersInCamelCase();
-
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
         Name = "Authorization",
@@ -58,7 +66,7 @@ builder.Services.AddSwaggerGen(options =>
                     Id = "Bearer"
                 }
             },
-            new string[] { }
+            []
         }
     });
 });
@@ -88,7 +96,7 @@ builder.Services.AddDbContext<BudgetPlanerContext>(
 
 builder.Services.AddScoped<IUnitOfWork<BudgetPlanerContext>, UnitOfWork<BudgetPlanerContext>>();
 
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+builder.Services.AddIdentityApiEndpoints<IdentityUser>(options => { })
     .AddEntityFrameworkStores<IdentityContext>();
 
 builder.Services.AddEndpointDefinitions(typeof(IAssemblyMarker));
@@ -107,6 +115,25 @@ builder.Services.AddSingleton(new SqidsEncoder<int>(new SqidsOptions
     Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
     MinLength = 5,
 }));
+
+var key = "budgetplanerCs3q.@WBaTi#34P"u8.ToArray();
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.FromSeconds(60) // Remove delay when token expires
+        };
+    });
 
 
 var app = builder.Build();

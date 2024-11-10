@@ -1,4 +1,4 @@
-﻿namespace BudgetPlaner.Models.Domain;
+﻿namespace BudgetPlaner.Domain;
 
 public record LoanEntity : BaseEntity
 {

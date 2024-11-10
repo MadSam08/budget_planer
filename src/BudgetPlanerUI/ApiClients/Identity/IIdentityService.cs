@@ -5,7 +5,8 @@ namespace BudgetPlaner.UI.ApiClients.Identity;
 
 public interface IIdentityService
 {
-    Task<bool> RegisterAsync(RegisterRequest request);
+    Task<bool> SignUpAsync(RegisterRequest request);
 
-    Task<LoginResponse?> LoginAsync(LoginRequest request);
+    Task<LoginResponse?> SignInAsync(LoginRequest request);
+    Task<TokenResponse?> RefreshToken(string? refreshToken);
 }

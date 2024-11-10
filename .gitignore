@@ -11,3 +11,6 @@ src/BudgetPlanerUI/bin/
 src/BudgetPlaner.Models/obj/
 src/BudgetPlaner.Models/bin/
 .idea/
+src/BudgetPlaner.Domain/obj/
+test/BugetPlaner.Domain.Test/obj/
+src/BudgetPlaner.Domain/bin/

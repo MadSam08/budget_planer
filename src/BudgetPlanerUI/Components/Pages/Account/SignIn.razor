@@ -1,28 +1,67 @@
 ﻿@layout RegistrationLayout
 @page "/account/sign-in"
 
-<EditForm Model="@SignInModel"  FormName="signIn">
-    <DataAnnotationsValidator/>
-    <MudGrid Class="d-flex justify-center flex-grow-1 gap-4 mt-5" Elevation="0">
-        <MudItem xs="12" sm="7">
-            <MudCard>
-                <MudCardContent>
-                    <MudTextField Label="Email"
-                                  Variant="Variant.Outlined"
-                                  @bind-Value="SignInModel.Email"/>
-                    <MudTextField Label="Password"
-                                  Variant="Variant.Outlined"
-                                  @bind-Value="SignInModel.Password"
-                                  InputType="InputType.Password"/>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Sign-In</MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</EditForm>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - WealthPlan</title>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100 bg-sign-in">
+<div class="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold text-center text-gray-700">Sign In to WealthPlan</h2>
+    <EditForm Model="@SignInModel" FormName="signIn"  class="space-y-4" OnValidSubmit="SignInUser">
+        <DataAnnotationsValidator/>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Email</label>
+            <InputText type="email" placeholder="Enter your email" class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+            <ValidationMessage For="@(()=> SignInModel.Email)"></ValidationMessage>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Password</label>
+            <InputText type="password" placeholder="Enter your password" class="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"/>\
+            <ValidationMessage For="@(() => SignInModel.Password)"></ValidationMessage>
+        </div>
+        <button type="submit" class="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">Login</button>
+        <p class="text-sm text-center text-gray-600">Don't have an account? <a href="/account/sign-up" class="text-blue-600 hover:underline">Sign up</a></p>
+    </EditForm>
+</div>
+</body>
+</html>
+
 
 @code {
-   [Parameter] public SignInModel SignInModel { get; set; }
+    [Parameter] public SignInModel SignInModel { get; set; } = new();
+
+    [Inject] private IIdentityService IdentityService { get; set; } = default!;
+
+    [Inject] private IHttpContextAccessor HttpContextAccessor { get; set; } = default!;
+
+    private async Task SignInUser(EditContext obj)
+    {
+        var loginResponse = await IdentityService.SignInAsync(new LoginRequest
+        {
+            Email = SignInModel.Email,
+            Password = SignInModel.Password
+        });
+
+        if (loginResponse != null)
+        {
+            
+        }
+    }
+    
+    private void SetCookie(string key, string value)
+    {
+        var cookies = HttpContextAccessor.HttpContext?.Response.Cookies;
+        
+        cookies?.Append(key, value, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddMinutes(60)
+        });
+    }
 }

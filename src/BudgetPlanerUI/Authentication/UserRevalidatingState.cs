@@ -1,31 +1,78 @@
 using System.Globalization;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using BudgetPlaner.Models.Api;
+using BudgetPlaner.UI.ApiClients.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 
-namespace BudgetPlaner.UI.Authentication
+namespace BudgetPlaner.UI.Authentication;
+
+// This is a server-side AuthenticationStateProvider that revalidates the security stamp for the connected user
+// every 30 minutes an interactive circuit is connected.
+
+internal sealed class UserRevalidatingState(
+    ILoggerFactory loggerFactory, 
+    IIdentityService identityService,
+    IHttpContextAccessor httpContextAccessor)
+    : RevalidatingServerAuthenticationStateProvider(loggerFactory)
 {
-    // This is a server-side AuthenticationStateProvider that revalidates the security stamp for the connected user
-    // every 30 minutes an interactive circuit is connected.
-    internal sealed class UserRevalidatingState(
-        ILoggerFactory loggerFactory)
-        : RevalidatingServerAuthenticationStateProvider(loggerFactory)
+    protected override TimeSpan RevalidationInterval => TimeSpan.FromMinutes(30);
+
+    protected override async Task<bool> ValidateAuthenticationStateAsync(
+        AuthenticationState authenticationState, CancellationToken cancellationToken)
     {
-        protected override TimeSpan RevalidationInterval => TimeSpan.FromMinutes(30);
+        var user = authenticationState.User;
 
-        protected override Task<bool> ValidateAuthenticationStateAsync(
-            AuthenticationState authenticationState, CancellationToken cancellationToken)
+        if (!(user?.Identity?.IsAuthenticated ?? false)) return false;
+
+        var accessToken = await GetCookieValueAsync("accessToken");
+        if (string.IsNullOrEmpty(accessToken)) return false;
+
+        var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
+        var expiryDate = jwtToken.ValidTo;
+
+        if (expiryDate > DateTime.UtcNow) return true;
+        
+        var refreshToken = await GetCookieValueAsync("refreshToken");
+        if (string.IsNullOrEmpty(refreshToken)) return false;
+
+        var newTokens = await RefreshTokensAsync(refreshToken);
+        if (newTokens == null) return false;
+
+        SetCookie("accessToken", newTokens.AccessToken!);
+        SetCookie("refreshToken", newTokens.RefreshToken!);
+
+        // Update authentication state with new claims
+        var identity = new ClaimsIdentity(new JwtSecurityTokenHandler().ReadJwtToken(newTokens.AccessToken).Claims, "jwt");
+        var newUser = new ClaimsPrincipal(identity);
+        var newAuthenticationState = Task.FromResult(new AuthenticationState(newUser));
+        NotifyAuthenticationStateChanged(newAuthenticationState);
+
+        return true;
+    }
+
+    private async Task<TokenResponse?> RefreshTokensAsync(string? refreshToken)
+    {
+        var response = await identityService.RefreshToken(refreshToken);
+        return response ?? null;
+    }
+
+    private async Task<string?> GetCookieValueAsync(string key)
+    {
+        var cookie = httpContextAccessor.HttpContext?.Request.Cookies[key];
+        return await Task.FromResult(cookie);
+    }
+
+    private void SetCookie(string key, string value)
+    {
+        var cookies = httpContextAccessor.HttpContext?.Response.Cookies;
+        cookies?.Append(key, value, new CookieOptions
         {
-            var user = authenticationState.User;
-            if (!(user?.Identity?.IsAuthenticated ?? false)) return Task.FromResult(false);
-            var expiryDateClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Expiration);
-            var expiryDateValue = expiryDateClaim?.Value ?? "";
-
-            if (string.IsNullOrEmpty(expiryDateValue)) return Task.FromResult(false);
-
-            return !DateTimeOffset.TryParse(expiryDateValue, CultureInfo.InvariantCulture, out var expiryDate)
-                ? Task.FromResult(false)
-                : Task.FromResult(expiryDate > DateTimeOffset.UtcNow);
-        }
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddMinutes(60)
+        });
     }
 }

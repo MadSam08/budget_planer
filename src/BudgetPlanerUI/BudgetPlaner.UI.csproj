@@ -11,10 +11,22 @@
 
   <ItemGroup>
     <PackageReference Include="Htmx" Version="1.8.0" />
-    <PackageReference Include="MudBlazor" Version="6.16.0" />
     <ProjectReference Include="..\BudgetPlaner.Models\BudgetPlaner.Models.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\content\css\main-layout.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\content\images\sign-in.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\content\images\sign-up.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

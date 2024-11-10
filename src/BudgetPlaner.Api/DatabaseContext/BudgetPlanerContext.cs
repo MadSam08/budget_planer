@@ -1,5 +1,5 @@
 ﻿using BudgetPlaner.Api.Constants;
-using BudgetPlaner.Models.Domain;
+using BudgetPlaner.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace BudgetPlaner.Api.DatabaseContext;

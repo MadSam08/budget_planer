@@ -1,0 +1,13 @@
+﻿.bg-sign-in {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url('/content/images/sign-in.png');
+    background-size: cover;      
+    background-position: center; 
+    background-repeat: no-repeat; 
+}
+
+.bg-sign-up {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url('/content/images/sign-in.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
