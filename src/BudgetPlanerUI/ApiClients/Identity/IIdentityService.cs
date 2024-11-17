@@ -8,5 +8,6 @@ public interface IIdentityService
     Task<bool> SignUpAsync(RegisterRequest request);
 
     Task<LoginResponse?> SignInAsync(LoginRequest request);
+    
     Task<TokenResponse?> RefreshToken(string? refreshToken);
 }

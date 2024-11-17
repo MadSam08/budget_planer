@@ -33,14 +33,13 @@
     </EditForm>
 
     <PopupMessage @ref="_popupMessage" MessageTitle="Login Success" MessageText="You have successfully logged in." IsSuccess="true" IsVisible="false"/>
-
 </div>
 </body>
 </html>
 
 
 @code {
-    [Parameter] private SignUpModel SignUpModel { get; set; } = new();
+    [Parameter] public SignUpModel SignUpModel { get; set; } = new();
 
     [Inject] private IIdentityService IdentityService { get; set; } = default!;
 

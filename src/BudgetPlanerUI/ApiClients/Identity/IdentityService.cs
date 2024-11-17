@@ -26,8 +26,20 @@ public class IdentityService(HttpClient client) : IIdentityService
         return result;
     }
 
-    public Task<TokenResponse> RefreshToken(string? refreshToken)
+    public async Task<TokenResponse?> RefreshToken(string? refreshToken)
     {
+        var response = await client.PostAsJsonAsync("budget-planer/account/refresh", new
+        {
+            refreshToken
+        });
         
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+        
+        var content = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<TokenResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return result;
     }
 }
