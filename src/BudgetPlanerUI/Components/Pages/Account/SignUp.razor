@@ -1,5 +1,7 @@
 ﻿@layout RegistrationLayout
 @page "/account/sign-up"
+@using BudgetPlaner.Contracts.UI.Identity
+@attribute [ExcludeFromInteractiveRouting]
 
 <!DOCTYPE html>
 <html lang="en">
@@ -39,13 +41,13 @@
 
 
 @code {
-    [Parameter] public SignUpModel SignUpModel { get; set; } = new();
-
     [Inject] private IIdentityService IdentityService { get; set; } = default!;
-
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
     private PopupMessage? _popupMessage;
+
+    [SupplyParameterFromForm]
+    private SignUpModel SignUpModel { get; set; } = new();
 
     private async Task CreateUserAccount(EditContext obj)
     {

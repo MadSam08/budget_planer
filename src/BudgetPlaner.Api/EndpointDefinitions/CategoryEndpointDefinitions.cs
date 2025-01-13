@@ -1,13 +1,8 @@
 ﻿using BudgetPlaner.Api.Bootstrap;
 using BudgetPlaner.Api.Constants.EndpointNames;
-using BudgetPlaner.Api.DatabaseContext;
 using BudgetPlaner.Api.Extensions;
-using BudgetPlaner.Api.Mappers;
-using BudgetPlaner.Api.Repository.UnitOfWork;
 using BudgetPlaner.Domain;
-using BudgetPlaner.Models.Api;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Sqids;
 
 namespace BudgetPlaner.Api.EndpointDefinitions
@@ -76,7 +71,7 @@ namespace BudgetPlaner.Api.EndpointDefinitions
 
         private static async Task<IResult> AddCategory([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
             [FromServices] IHttpContextAccessor httpContextAccessor,
-            [FromBody] CategoryModel categoryModel)
+            [FromBody] CategoryRequest categoryModel)
         {
             var entity = categoryModel.MapToEntity();
             var userId = httpContextAccessor.GetUserIdFromClaims();
@@ -95,7 +90,7 @@ namespace BudgetPlaner.Api.EndpointDefinitions
 
         private static async Task<IResult> UpdateCategory([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
             [FromServices] IHttpContextAccessor httpContextAccessor,
-            [FromServices] SqidsEncoder<int> sqidsEncoder, string id, [FromBody] CategoryModel categoryModel)
+            [FromServices] SqidsEncoder<int> sqidsEncoder, string id, [FromBody] CategoryRequest categoryModel)
         {
             var idDecoded = sqidsEncoder.Decode(id).SingleOrDefault();
             if (idDecoded == 0) return Results.BadRequest();

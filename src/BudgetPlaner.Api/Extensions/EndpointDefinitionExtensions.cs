@@ -1,5 +1,4 @@
 ﻿using BudgetPlaner.Api.Bootstrap;
-using BudgetPlaner.Api.Helpers;
 
 namespace BudgetPlaner.Api.Extensions;
 
@@ -37,7 +36,7 @@ public static class EndpointDefinitionExtensions
         }
     }
 
-    public static RouteHandlerBuilder AddValidationFilter<TRequest>(this RouteHandlerBuilder builder)
-        where TRequest : class
-        => builder.AddEndpointFilter<ValidationFilter<TRequest>>();
+    // public static RouteHandlerBuilder AddValidationFilter<TRequest>(this RouteHandlerBuilder builder)
+    //     where TRequest : class
+    //     => builder.AddEndpointFilter<ValidationFilter<TRequest>>();
 }

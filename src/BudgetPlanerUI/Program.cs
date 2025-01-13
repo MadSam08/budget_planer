@@ -1,8 +1,8 @@
 using BudgetPlaner.UI.ApiClients.Identity;
 using BudgetPlaner.UI.Components;
-using BudgetPlaner.UI.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +17,7 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthorizationCore();
-builder.Services.AddEndpointDefinitions();
+builder.Services.AddMudServices();
 
 builder.Services.AddHttpClient<IIdentityService, IdentityService>(client =>
 {
@@ -53,9 +53,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+app.MapStaticAssets();
 app.UseAntiforgery();
-app.UseEndpointDefinitions();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 

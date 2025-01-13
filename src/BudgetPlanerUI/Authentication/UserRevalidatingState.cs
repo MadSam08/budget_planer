@@ -1,8 +1,10 @@
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using BudgetPlaner.Models.Api;
+using BudgetPlaner.Contracts.Api;
+using BudgetPlaner.Contracts.Api.Identity;
 using BudgetPlaner.UI.ApiClients.Identity;
+using BudgetPlaner.UI.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 
@@ -43,9 +45,7 @@ internal sealed class UserRevalidatingState(
         SetCookie("accessToken", newTokens.AccessToken!);
         SetCookie("refreshToken", newTokens.RefreshToken!);
 
-        // Update authentication state with new claims
-        var identity = new ClaimsIdentity(new JwtSecurityTokenHandler().ReadJwtToken(newTokens.AccessToken).Claims, "jwt");
-        var newUser = new ClaimsPrincipal(identity);
+        var newUser = SignInService.GetPrincipal(newTokens);
         var newAuthenticationState = Task.FromResult(new AuthenticationState(newUser));
         NotifyAuthenticationStateChanged(newAuthenticationState);
 

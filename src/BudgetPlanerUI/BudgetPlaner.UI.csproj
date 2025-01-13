@@ -11,7 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="Htmx" Version="1.8.1" />
-    <ProjectReference Include="..\BudgetPlaner.Models\BudgetPlaner.Models.csproj" />
+    <PackageReference Include="MudBlazor" Version="7.15.0" />
+    <ProjectReference Include="..\..\BudgetPlaner.Contracts\BudgetPlaner.Contracts.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
   </ItemGroup>
@@ -27,6 +28,43 @@
     <Content Update="wwwroot\content\images\sign-up.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Update="Style\tailwind.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\css\material-icons.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\css\material-icons.min.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\css\material-icons.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\css\_codepoints.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\css\_mixins.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\css\_variables.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\filled.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\filled.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons-outlined.woff" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons-outlined.woff2" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons-round.woff" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons-round.woff2" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons-sharp.woff" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons-sharp.woff2" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons-two-tone.woff" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons-two-tone.woff2" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons.woff" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\material-icons.woff2" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\outlined.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\outlined.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\round.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\round.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\sharp.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\sharp.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\two-tone.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\two-tone.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\_mixins.scss" />
+    <_ContentIncludedByDefault Remove="wwwroot\content\material-icon\_variables.scss" />
   </ItemGroup>
 
 </Project>

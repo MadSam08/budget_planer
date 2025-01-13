@@ -4,7 +4,7 @@ public record LoanInterestRateEntity : BaseEntity
 {
     public int LoanId { get; set; }
     
-    public InterestPayType InterestPayType { get; set; }
+    public int InterestPayType { get; set; }
     
     public decimal PrincipalValue { get; set; }
     

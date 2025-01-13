@@ -1,5 +1,6 @@
-﻿using BudgetPlaner.Domain;
-using BudgetPlaner.Models.Api;
+﻿using BudgetPlaner.Contracts.Api;
+using BudgetPlaner.Contracts.Api.Loan;
+using BudgetPlaner.Domain;
 using Sqids;
 
 namespace BudgetPlaner.Api.Mappers;

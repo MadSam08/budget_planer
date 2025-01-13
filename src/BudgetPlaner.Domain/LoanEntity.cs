@@ -15,7 +15,7 @@ public record LoanEntity : BaseEntity
     
     public decimal AnnualRate { get; set; }
     
-    public CreditStatus CreditStatus { get; set; }
+    public int CreditStatus { get; set; }
     
     /// <summary>
     /// DAE

@@ -1,5 +1,8 @@
 ﻿@layout RegistrationLayout
 @page "/account/sign-in"
+@using BudgetPlaner.Contracts.UI.Identity
+
+@attribute [ExcludeFromInteractiveRouting]
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,15 +35,31 @@
 
 
 @code {
-    [Parameter] public SignInModel SignInModel { get; set; } = new();
-
-    [Inject] private IIdentityService IdentityService { get; set; } = default!;
-
-    [Inject] private IHttpContextAccessor HttpContextAccessor { get; set; } = default!;
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+    
+    [SupplyParameterFromForm]
+    public SignInModel SignInModel { get; set; } = new();
+    
+    private readonly IIdentityService _identityService;
+    private readonly NavigationManager _navigationManager;
+    public SignIn(IIdentityService identityService, NavigationManager navigationManager)
+    {
+        _identityService = identityService;
+        _navigationManager = navigationManager;
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpMethods.IsGet(HttpContext.Request.Method))
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        }
+    }
 
     private async Task SignInUser(EditContext obj)
     {
-        var loginResponse = await IdentityService.SignInAsync(new LoginRequest
+        var loginResponse = await _identityService.SignInAsync(new LoginRequest
         {
             Email = SignInModel.Email,
             Password = SignInModel.Password
@@ -48,14 +67,16 @@
 
         if (loginResponse != null)
         {
-            
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, SignInService.GetPrincipal(loginResponse));
+            SetCookie("accessToken", loginResponse.AccessToken!);
+            SetCookie("refreshToken", loginResponse.RefreshToken!);
+            _navigationManager.NavigateTo("/");
         }
     }
     
     private void SetCookie(string key, string value)
     {
-        var cookies = HttpContextAccessor.HttpContext?.Response.Cookies;
-        
+        var cookies = HttpContext?.Response.Cookies;
         cookies?.Append(key, value, new CookieOptions
         {
             HttpOnly = true,

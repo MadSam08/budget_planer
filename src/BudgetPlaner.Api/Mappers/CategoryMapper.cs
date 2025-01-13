@@ -1,39 +1,40 @@
-﻿using BudgetPlaner.Domain;
-using BudgetPlaner.Models.Api;
+﻿using BudgetPlaner.Contracts.Api;
+using BudgetPlaner.Contracts.Api.Category;
+using BudgetPlaner.Domain;
 using Sqids;
 
 namespace BudgetPlaner.Api.Mappers;
 
 public static class CategoryMapper
 {
-    public static CategoryEntity MapToEntity(this CategoryModel model)
+    public static CategoryEntity MapToEntity(this CategoryRequest request)
     {
         return new CategoryEntity
         {
-            Name = model.Name,
+            Name = request.Name,
             UserId = "",
-            CategoryTypes = model.CategoryTypes,
+            CategoryTypes = (int)request.CategoryTypes,
         };
     }
 
-    public static CategoryModel MapToModel(this CategoryEntity entity, SqidsEncoder<int> sqids)
+    public static CategoryRequest MapToModel(this CategoryEntity entity, SqidsEncoder<int> sqids)
     {
-        return new CategoryModel
+        return new CategoryRequest
         {
             Id = sqids.Encode(entity.Id),
             Name = entity.Name,
-            CategoryTypes = entity.CategoryTypes,
+            CategoryTypes = (CategoryTypes)entity.CategoryTypes,
         };
     }
 
-    public static IEnumerable<CategoryModel> MapToModel(this IEnumerable<CategoryEntity> entity,
+    public static IEnumerable<CategoryRequest> MapToModel(this IEnumerable<CategoryEntity> entity,
         SqidsEncoder<int> sqids)
     {
-        return entity.Select(x => new CategoryModel
+        return entity.Select(x => new CategoryRequest
         {
             Id = sqids.Encode(x.Id),
             Name = x.Name,
-            CategoryTypes = x.CategoryTypes
+            CategoryTypes = (CategoryTypes)x.CategoryTypes
         });
     }
 }

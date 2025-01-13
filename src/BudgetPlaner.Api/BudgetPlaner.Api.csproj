@@ -25,13 +25,14 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
     <PackageReference Include="Sqids" Version="3.1.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BudgetPlaner.Models\BudgetPlaner.Models.csproj" />
+    <ProjectReference Include="..\..\BudgetPlaner.Application\BudgetPlaner.Application.csproj" />
+    <ProjectReference Include="..\..\BudgetPlaner.Contracts\BudgetPlaner.Contracts.csproj" />
+    <ProjectReference Include="..\..\BudgetPlaner.Infrastructure\BudgetPlaner.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,10 +48,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ExceptionMessages.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Validators\" />
   </ItemGroup>
 
 </Project>

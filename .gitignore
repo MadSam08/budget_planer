@@ -14,3 +14,8 @@ src/BudgetPlaner.Models/bin/
 src/BudgetPlaner.Domain/obj/
 test/BugetPlaner.Domain.Test/obj/
 src/BudgetPlaner.Domain/bin/
+test/BugetPlaner.Domain.Test/bin/
+BudgetPlaner.Contracts/obj/
+BudgetPlaner.Application/obj/
+BudgetPlaner.Contracts/bin/
+BudgetPlaner.Infrastructure/obj/

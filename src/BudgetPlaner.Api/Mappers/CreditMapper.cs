@@ -1,5 +1,6 @@
-﻿using BudgetPlaner.Domain;
-using BudgetPlaner.Models.Api;
+﻿using BudgetPlaner.Contracts.Api;
+using BudgetPlaner.Contracts.Api.Loan;
+using BudgetPlaner.Domain;
 using Sqids;
 
 namespace BudgetPlaner.Api.Mappers;
@@ -20,7 +21,7 @@ public static class CreditMapper
             BankName = model.BankName,
             TotalAmount = model.TotalValue,
             APR = model.APR,
-            CreditStatus = model.CreditStatus
+            CreditStatus = (int)model.CreditStatus
         };
     }
 
@@ -39,7 +40,7 @@ public static class CreditMapper
             TotalValue = entity.TotalAmount,
             APR = entity.APR,
             CurrencyName = entity.Currency?.Name,
-            CreditStatus = entity.CreditStatus
+            CreditStatus = (CreditStatus)entity.CreditStatus
         };
     }
 
@@ -59,7 +60,7 @@ public static class CreditMapper
             TotalValue = x.TotalAmount,
             APR = x.APR,
             CurrencyName = x.Currency?.Name,
-            CreditStatus = x.CreditStatus
+            CreditStatus = (CreditStatus)x.CreditStatus
         });
     }
 }

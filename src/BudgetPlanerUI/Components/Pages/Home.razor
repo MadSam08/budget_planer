@@ -3,12 +3,20 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @attribute [Authorize]
 
-@code {
-   [CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+<div class="max-w-md">
+   <VerticalMenu/>
+</div>
 
+@code {
+   [CascadingParameter] 
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+   private AuthenticationState? State { get; set; }
    protected override async Task OnInitializedAsync()
    {
-      var user = await AuthenticationState;
-      var identity = user.User.Identity;
+      if (AuthenticationState != null)
+      {
+         State = await AuthenticationState;
+      }
    }
 }

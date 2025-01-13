@@ -1,15 +1,13 @@
-using System.Reflection;
-using System.Text;
 using BudgetPlaner.Api.Bootstrap;
-using BudgetPlaner.Api.DatabaseContext;
 using BudgetPlaner.Api.Extensions;
-using BudgetPlaner.Api.Repository.UnitOfWork;
+using BudgetPlaner.Application;
+using BudgetPlaner.Infrastructure;
+using BudgetPlaner.Infrastructure.DatabaseContext;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sqids;
@@ -20,7 +18,6 @@ builder.Services.AddAuthorization();
 
 builder.Services
     .AddAuthentication();
-    // .AddBearerToken(IdentityConstants.BearerScheme);
 
 builder.Services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme)
     .Configure(options =>
@@ -71,39 +68,18 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-builder.Services.AddDbContext<IdentityContext>(
-    opts =>
-    {
-        opts.UseNpgsql(builder.Configuration["IdentityDb:DbConnection"],
-            optionsBuilder =>
-            {
-                optionsBuilder.MigrationsAssembly(assemblyName);
-                optionsBuilder.EnableRetryOnFailure();
-            });
-    });
-
-builder.Services.AddDbContext<BudgetPlanerContext>(
-    opts =>
-    {
-        opts.UseNpgsql(builder.Configuration["BudgetPlanerDb:DbConnection"],
-            optionsBuilder =>
-            {
-                optionsBuilder.MigrationsAssembly(assemblyName);
-                optionsBuilder.EnableRetryOnFailure();
-            });
-    });
-
-builder.Services.AddScoped<IUnitOfWork<BudgetPlanerContext>, UnitOfWork<BudgetPlanerContext>>();
-
-builder.Services.AddIdentityApiEndpoints<IdentityUser>(options => { })
-    .AddEntityFrameworkStores<IdentityContext>();
 
 builder.Services.AddEndpointDefinitions(typeof(IAssemblyMarker));
 
 builder.Services.AddFluentValidationAutoValidation()
     .AddFluentValidationClientsideAdapters()
     .AddValidatorsFromAssembly(typeof(IAssemblyMarker).Assembly);
+
+builder.Services.AddIdentityApiEndpoints<IdentityUser>(options => { })
+    .AddEntityFrameworkStores<IdentityContext>();
+
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
 
 builder.Services.AddOutputCache(options =>
 {

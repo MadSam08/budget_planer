@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
-using BudgetPlaner.Models.Api;
+using BudgetPlaner.Contracts.Api;
+using BudgetPlaner.Contracts.Api.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 
 namespace BudgetPlaner.UI.ApiClients.Identity;
@@ -12,7 +13,7 @@ public class IdentityService(HttpClient client) : IIdentityService
         return response.IsSuccessStatusCode;
     }
     
-    public async Task<LoginResponse?> SignInAsync(LoginRequest request)
+    public async Task<TokenResponse?> SignInAsync(LoginRequest request)
     {
         var response = await client.PostAsJsonAsync("budget-planer/account/login", request);
         
@@ -22,7 +23,7 @@ public class IdentityService(HttpClient client) : IIdentityService
         }
         
         var content = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<LoginResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var result = JsonSerializer.Deserialize<TokenResponse>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         return result;
     }
 
