@@ -5,6 +5,7 @@ using BudgetPlaner.Api.Extensions;
 using BudgetPlaner.Api.Mappers;
 using BudgetPlaner.Contracts.Api;
 using BudgetPlaner.Domain;
+using BudgetPlaner.Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sqids;

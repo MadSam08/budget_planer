@@ -30,9 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BudgetPlaner.Application\BudgetPlaner.Application.csproj" />
-    <ProjectReference Include="..\..\BudgetPlaner.Contracts\BudgetPlaner.Contracts.csproj" />
-    <ProjectReference Include="..\..\BudgetPlaner.Infrastructure\BudgetPlaner.Infrastructure.csproj" />
+    <ProjectReference Include="..\BudgetPlaner.Application\BudgetPlaner.Application.csproj" />
+    <ProjectReference Include="..\BudgetPlaner.Contracts\BudgetPlaner.Contracts.csproj" />
+    <ProjectReference Include="..\BudgetPlaner.Infrastructure\BudgetPlaner.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

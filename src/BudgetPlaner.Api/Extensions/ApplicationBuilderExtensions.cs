@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BudgetPlaner.Infrastructure.DatabaseContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace BudgetPlaner.Api.Extensions;
 

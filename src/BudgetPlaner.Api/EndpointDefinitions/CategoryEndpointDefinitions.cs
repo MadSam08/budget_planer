@@ -1,7 +1,10 @@
 ﻿using BudgetPlaner.Api.Bootstrap;
 using BudgetPlaner.Api.Constants.EndpointNames;
 using BudgetPlaner.Api.Extensions;
+using BudgetPlaner.Api.Mappers;
+using BudgetPlaner.Contracts.Api.Category;
 using BudgetPlaner.Domain;
+using BudgetPlaner.Infrastructure.DatabaseContext;
 using Microsoft.AspNetCore.Mvc;
 using Sqids;
 
