@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
 
-namespace BudgetPlaner.Api.Repository;
+namespace BudgetPlaner.Infrastructure.Repository;
 
 public interface IGenericRepository<TEntity> where TEntity : class
 {

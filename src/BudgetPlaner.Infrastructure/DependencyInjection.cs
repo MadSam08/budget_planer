@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using BudgetPlaner.Infrastructure.DatabaseContext;
+using BudgetPlaner.Infrastructure.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfigurationManager configuration)
     {
         var assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+        
         services.AddDbContext<IdentityContext>(
             opts =>
             {
@@ -32,6 +34,10 @@ public static class DependencyInjection
                         optionsBuilder.EnableRetryOnFailure();
                     });
             });
+        
+        // Register Unit of Work
+        services.AddScoped<IUnitOfWork<BudgetPlanerContext>, UnitOfWork<BudgetPlanerContext>>();
+        services.AddScoped<IUnitOfWork<IdentityContext>, UnitOfWork<IdentityContext>>();
         
         return services;
     }

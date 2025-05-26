@@ -1,4 +1,7 @@
 using BudgetPlaner.Domain;
+using BudgetPlaner.Infrastructure.DatabaseContext;
+using BudgetPlaner.Infrastructure.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 
 namespace BudgetPlaner.Application.Services.Insights;
 
@@ -134,7 +137,8 @@ public class FinancialInsightService(IUnitOfWork<BudgetPlanerContext> unitOfWork
                         Type = InsightType.SpendingAlert,
                         Priority = increasePercentage > 50 ? InsightPriority.High : InsightPriority.Medium,
                         CategoryId = currentSpending.CategoryId,
-                        ValidUntil = DateTime.UtcNow.AddDays(15)
+                        ValidUntil = DateTime.UtcNow.AddDays(15),
+                        UserId = userId
                     });
                 }
             }
@@ -172,7 +176,8 @@ public class FinancialInsightService(IUnitOfWork<BudgetPlanerContext> unitOfWork
                 Priority = InsightPriority.Medium,
                 CategoryId = expense.CategoryId,
                 PotentialSavings = potentialSavings,
-                ValidUntil = DateTime.UtcNow.AddDays(30)
+                ValidUntil = DateTime.UtcNow.AddDays(30),
+                UserId = userId
             });
         }
         
@@ -209,7 +214,8 @@ public class FinancialInsightService(IUnitOfWork<BudgetPlanerContext> unitOfWork
                         Type = InsightType.BudgetRecommendation,
                         Priority = InsightPriority.High,
                         CategoryId = category.CategoryId,
-                        ValidUntil = DateTime.UtcNow.AddDays(7)
+                        ValidUntil = DateTime.UtcNow.AddDays(7),
+                        UserId = userId
                     });
                 }
             }
@@ -231,7 +237,8 @@ public class FinancialInsightService(IUnitOfWork<BudgetPlanerContext> unitOfWork
                     Priority = InsightPriority.Low,
                     CategoryId = category.CategoryId,
                     PotentialSavings = unusedAmount,
-                    ValidUntil = DateTime.UtcNow.AddDays(20)
+                    ValidUntil = DateTime.UtcNow.AddDays(20),
+                    UserId = userId
                 });
             }
         }
@@ -260,7 +267,8 @@ public class FinancialInsightService(IUnitOfWork<BudgetPlanerContext> unitOfWork
                 Type = InsightType.LoanOptimization,
                 Priority = InsightPriority.Medium,
                 PotentialSavings = interestSavings,
-                ValidUntil = DateTime.UtcNow.AddDays(45)
+                ValidUntil = DateTime.UtcNow.AddDays(45),
+                UserId = userId
             };
         }
         

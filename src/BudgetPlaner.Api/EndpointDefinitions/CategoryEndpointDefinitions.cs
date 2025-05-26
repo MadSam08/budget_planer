@@ -5,7 +5,9 @@ using BudgetPlaner.Api.Mappers;
 using BudgetPlaner.Contracts.Api.Category;
 using BudgetPlaner.Domain;
 using BudgetPlaner.Infrastructure.DatabaseContext;
+using BudgetPlaner.Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Sqids;
 
 namespace BudgetPlaner.Api.EndpointDefinitions
@@ -107,7 +109,7 @@ namespace BudgetPlaner.Api.EndpointDefinitions
                 .UpdateAsync(x => x.Id == idDecoded && x.UserId.Equals(userId), 
                     prop =>
                     prop.SetProperty(c => c.Name, categoryModel.Name)
-                        .SetProperty(c => c.CategoryTypes, categoryModel.CategoryTypes)
+                        .SetProperty(c => c.CategoryTypes, (int)categoryModel.CategoryTypes)
                         .SetProperty(c => c.UpdateDate, DateTime.UtcNow));
 
             return Results.NoContent();

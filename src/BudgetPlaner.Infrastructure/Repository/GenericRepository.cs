@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
-namespace BudgetPlaner.Api.Repository;
+namespace BudgetPlaner.Infrastructure.Repository;
 
 public class GenericRepository<TEntity, TContext>(TContext dbContext) : IGenericRepository<TEntity>
     where TEntity : class

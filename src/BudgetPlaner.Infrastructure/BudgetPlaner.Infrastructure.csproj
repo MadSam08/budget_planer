@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BudgetPlaner.Application\BudgetPlaner.Application.csproj" />
+      <ProjectReference Include="..\BudgetPlaner.Domain\BudgetPlaner.Domain.csproj" />
     </ItemGroup>
 
 </Project>

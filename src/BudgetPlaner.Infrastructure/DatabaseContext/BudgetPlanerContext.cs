@@ -1,10 +1,9 @@
 ﻿using BudgetPlaner.Domain;
-using BudgetPlaner.Infrastructure.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace BudgetPlaner.Infrastructure.DatabaseContext;
 
-public class BudgetPlanerContext : DbContext, IUnitOfWork
+public class BudgetPlanerContext : DbContext
 {
     public BudgetPlanerContext()
     {
@@ -100,10 +99,5 @@ public class BudgetPlanerContext : DbContext, IUnitOfWork
             .HasForeignKey(x => x.LoanId);
         
         base.OnModelCreating(modelBuilder);
-    }
-
-    public async Task<int> Complete()
-    {
-        return await base.SaveChangesAsync();
     }
 }

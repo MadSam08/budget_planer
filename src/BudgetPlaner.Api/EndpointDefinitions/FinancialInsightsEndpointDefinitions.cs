@@ -131,4 +131,7 @@ public class FinancialInsightsEndpointDefinitions : IEndpointDefinition
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
         var insight = await insightService.GenerateLoanOptimizationSuggestionAsync(loanId, userId);
+        return insight != null ? Results.Ok(insight) : Results.NotFound();
+    }
+}
  

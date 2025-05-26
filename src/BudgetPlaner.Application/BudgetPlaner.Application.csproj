@@ -9,10 +9,12 @@
     <ItemGroup>
       <PackageReference Include="MediatR" Version="12.4.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\BudgetPlaner.Domain\BudgetPlaner.Domain.csproj" />
+      <ProjectReference Include="..\BudgetPlaner.Infrastructure\BudgetPlaner.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
