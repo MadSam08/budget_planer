@@ -1,0 +1,12 @@
+D:\BugetPlanner\BudgetPlaner.Contracts\bin\Debug\net9.0\BudgetPlaner.Contracts.deps.json
+D:\BugetPlanner\BudgetPlaner.Contracts\bin\Debug\net9.0\BudgetPlaner.Contracts.dll
+D:\BugetPlanner\BudgetPlaner.Contracts\bin\Debug\net9.0\BudgetPlaner.Contracts.pdb
+D:\BugetPlanner\BudgetPlaner.Contracts\obj\Debug\net9.0\BudgetPlaner.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+D:\BugetPlanner\BudgetPlaner.Contracts\obj\Debug\net9.0\BudgetPlaner.Contracts.AssemblyInfoInputs.cache
+D:\BugetPlanner\BudgetPlaner.Contracts\obj\Debug\net9.0\BudgetPlaner.Contracts.AssemblyInfo.cs
+D:\BugetPlanner\BudgetPlaner.Contracts\obj\Debug\net9.0\BudgetPlaner.Contracts.csproj.CoreCompileInputs.cache
+D:\BugetPlanner\BudgetPlaner.Contracts\obj\Debug\net9.0\BudgetPlaner.Contracts.sourcelink.json
+D:\BugetPlanner\BudgetPlaner.Contracts\obj\Debug\net9.0\BudgetPlaner.Contracts.dll
+D:\BugetPlanner\BudgetPlaner.Contracts\obj\Debug\net9.0\refint\BudgetPlaner.Contracts.dll
+D:\BugetPlanner\BudgetPlaner.Contracts\obj\Debug\net9.0\BudgetPlaner.Contracts.pdb
+D:\BugetPlanner\BudgetPlaner.Contracts\obj\Debug\net9.0\ref\BudgetPlaner.Contracts.dll
