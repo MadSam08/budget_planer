@@ -28,7 +28,7 @@ internal sealed class UserRevalidatingState(
 
         if (!(user?.Identity?.IsAuthenticated ?? false)) return false;
 
-        var accessToken = await GetCookieValueAsync("accessToken");
+        var accessToken = user.FindFirst("AccessToken")?.Value;
         if (string.IsNullOrEmpty(accessToken)) return false;
 
         var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
@@ -36,17 +36,22 @@ internal sealed class UserRevalidatingState(
 
         if (expiryDate > DateTime.UtcNow) return true;
         
-        var refreshToken = await GetCookieValueAsync("refreshToken");
+        var refreshToken = user.FindFirst("RefreshToken")?.Value;
         if (string.IsNullOrEmpty(refreshToken)) return false;
 
         var newTokens = await RefreshTokensAsync(refreshToken);
         if (newTokens == null) return false;
 
-        SetCookie("accessToken", newTokens.AccessToken!);
-        SetCookie("refreshToken", newTokens.RefreshToken!);
-
+        // Create new principal with updated tokens
         var newUser = SignInService.GetPrincipal(newTokens);
-        var newAuthenticationState = Task.FromResult(new AuthenticationState(newUser));
+        var claims = newUser.Claims.ToList();
+        claims.Add(new Claim("AccessToken", newTokens.AccessToken!));
+        claims.Add(new Claim("RefreshToken", newTokens.RefreshToken!));
+        
+        var identity = new ClaimsIdentity(claims, user.Identity.AuthenticationType);
+        var updatedPrincipal = new ClaimsPrincipal(identity);
+        
+        var newAuthenticationState = Task.FromResult(new AuthenticationState(updatedPrincipal));
         NotifyAuthenticationStateChanged(newAuthenticationState);
 
         return true;
@@ -56,23 +61,5 @@ internal sealed class UserRevalidatingState(
     {
         var response = await identityService.RefreshToken(refreshToken);
         return response ?? null;
-    }
-
-    private async Task<string?> GetCookieValueAsync(string key)
-    {
-        var cookie = httpContextAccessor.HttpContext?.Request.Cookies[key];
-        return await Task.FromResult(cookie);
-    }
-
-    private void SetCookie(string key, string value)
-    {
-        var cookies = httpContextAccessor.HttpContext?.Response.Cookies;
-        cookies?.Append(key, value, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddMinutes(60)
-        });
     }
 }

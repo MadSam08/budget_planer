@@ -61,15 +61,10 @@ public class SavingsGoalService(IUnitOfWork<BudgetPlanerContext> unitOfWork) : I
 
     public async Task<bool> DeleteSavingsGoalAsync(int goalId, string userId)
     {
-        var goal = await unitOfWork.Repository<SavingsGoalEntity>()
-            .Where(sg => sg.Id == goalId && sg.UserId == userId)
-            .FirstOrDefaultAsync();
+        var deletedCount = await unitOfWork.Repository<SavingsGoalEntity>()
+            .ExecuteDeleteAsync(sg => sg.Id == goalId && sg.UserId == userId);
 
-        if (goal == null) return false;
-
-        unitOfWork.Repository<SavingsGoalEntity>().Remove(goal);
-        await unitOfWork.Complete();
-        return true;
+        return deletedCount > 0;
     }
 
     public async Task<SavingsContributionEntity> AddContributionAsync(int goalId, decimal amount, ContributionType type, string? notes, string userId)

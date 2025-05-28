@@ -2,11 +2,12 @@
 using BudgetPlaner.Api.Constants.EndpointNames;
 using BudgetPlaner.Api.Extensions;
 using BudgetPlaner.Api.Mappers;
-using BudgetPlaner.Contracts.Api;
 using BudgetPlaner.Contracts.Api.Loan;
 using BudgetPlaner.Domain;
 using BudgetPlaner.Infrastructure.DatabaseContext;
+using BudgetPlaner.Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Sqids;
 
 namespace BudgetPlaner.Api.EndpointDefinitions;
@@ -125,10 +126,10 @@ public class IncomeEndpointDefinitions : IEndpointDefinition
         if (string.IsNullOrEmpty(userId))
             return Results.BadRequest();
 
-        await unitOfWork.Repository<IncomeEntity>()
-            .DeleteAsync(x => x.Id == idDecoded && x.UserId.Equals(userId));
+        var deletedCount = await unitOfWork.Repository<IncomeEntity>()
+            .ExecuteDeleteAsync(x => x.Id == idDecoded && x.UserId.Equals(userId));
 
-        return Results.NoContent();
+        return deletedCount > 0 ? Results.NoContent() : Results.NotFound();
     }
 
     public void DefineServices(IServiceCollection services)

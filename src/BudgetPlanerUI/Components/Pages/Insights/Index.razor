@@ -1,0 +1,199 @@
+@page "/insights"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<PageTitle>Financial Insights - Budget Planner</PageTitle>
+
+<div class="d-flex justify-space-between align-center mb-6">
+    <div>
+        <MudText Typo="Typo.h4" GutterBottom="true">Financial Insights</MudText>
+        <MudText Typo="Typo.body1">AI-powered recommendations to improve your financial health.</MudText>
+    </div>
+    <MudButton Variant="Variant.Outlined" 
+               Color="Color.Primary" 
+               StartIcon="Icons.Material.Filled.Refresh">
+        Generate Insights
+    </MudButton>
+</div>
+
+<MudGrid>
+    <!-- Insights Cards -->
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center mb-3">
+                    <MudIcon Icon="Icons.Material.Filled.TrendingUp" Color="Color.Success" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h6" Color="Color.Success">Positive Trend</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Spending Analysis</MudText>
+                    </div>
+                </div>
+                <MudText Typo="Typo.body2">
+                    Your food expenses decreased by 15% this month compared to last month. Keep up the good work!
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center mb-3">
+                    <MudIcon Icon="Icons.Material.Filled.Warning" Color="Color.Warning" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h6" Color="Color.Warning">Budget Alert</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Entertainment</MudText>
+                    </div>
+                </div>
+                <MudText Typo="Typo.body2">
+                    You've spent 85% of your entertainment budget. Consider reducing expenses in this category.
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center mb-3">
+                    <MudIcon Icon="Icons.Material.Filled.Lightbulb" Color="Color.Info" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h6" Color="Color.Info">Savings Tip</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Coffee Spending</MudText>
+                    </div>
+                </div>
+                <MudText Typo="Typo.body2">
+                    You could save $65/month by reducing coffee shop visits by 50%. Try brewing at home!
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center mb-3">
+                    <MudIcon Icon="Icons.Material.Filled.Schedule" Color="Color.Primary" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h6" Color="Color.Primary">Goal Progress</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Emergency Fund</MudText>
+                    </div>
+                </div>
+                <MudText Typo="Typo.body2">
+                    You're 90% towards your emergency fund goal. Just $500 more to reach your target!
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center mb-3">
+                    <MudIcon Icon="Icons.Material.Filled.CompareArrows" Color="Color.Secondary" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h6" Color="Color.Secondary">Comparison</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">vs. Last Month</MudText>
+                    </div>
+                </div>
+                <MudText Typo="Typo.body2">
+                    Your total spending is 8% lower than last month. You're trending in the right direction!
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center mb-3">
+                    <MudIcon Icon="Icons.Material.Filled.Psychology" Color="Color.Tertiary" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h6" Color="Color.Tertiary">Smart Insight</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Spending Pattern</MudText>
+                    </div>
+                </div>
+                <MudText Typo="Typo.body2">
+                    Your highest spending days are Fridays and Saturdays. Consider planning weekend activities in advance.
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<!-- Detailed Analysis -->
+<MudCard Class="mt-6">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="Icons.Material.Filled.Analytics" Class="mr-2" />
+                Monthly Financial Health Score
+            </MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudGrid>
+            <MudItem xs="12" md="8">
+                <div class="mb-4">
+                    <div class="d-flex justify-space-between mb-2">
+                        <MudText Typo="Typo.body1">Overall Score</MudText>
+                        <MudText Typo="Typo.h6" Color="Color.Success">85/100</MudText>
+                    </div>
+                    <MudProgressLinear Value="85" Color="Color.Success" Size="Size.Large" />
+                </div>
+                
+                <MudStack Spacing="3">
+                    <div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <MudText Typo="Typo.body2">Budget Adherence</MudText>
+                            <MudText Typo="Typo.body2">92%</MudText>
+                        </div>
+                        <MudProgressLinear Value="92" Color="Color.Success" />
+                    </div>
+                    
+                    <div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <MudText Typo="Typo.body2">Savings Rate</MudText>
+                            <MudText Typo="Typo.body2">78%</MudText>
+                        </div>
+                        <MudProgressLinear Value="78" Color="Color.Info" />
+                    </div>
+                    
+                    <div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <MudText Typo="Typo.body2">Expense Control</MudText>
+                            <MudText Typo="Typo.body2">85%</MudText>
+                        </div>
+                        <MudProgressLinear Value="85" Color="Color.Primary" />
+                    </div>
+                </MudStack>
+            </MudItem>
+            
+            <MudItem xs="12" md="4">
+                <MudPaper Class="pa-3" Elevation="0" Style="background-color: var(--mud-palette-background-grey);">
+                    <MudText Typo="Typo.h6" GutterBottom="true">Key Recommendations</MudText>
+                    <MudList T="string" Dense="true">
+                        <MudListItem Icon="Icons.Material.Filled.Star" Text="Increase emergency fund by $200/month" />
+                        <MudListItem Icon="Icons.Material.Filled.Star" Text="Set up automatic savings transfer" />
+                        <MudListItem Icon="Icons.Material.Filled.Star" Text="Review subscription services" />
+                        <MudListItem Icon="Icons.Material.Filled.Star" Text="Consider investment options" />
+                    </MudList>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudCardContent>
+</MudCard>
+
+<MudPaper Class="pa-4 mt-6">
+    <MudText Typo="Typo.h6" GutterBottom="true">AI-Powered Financial Insights</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
+        This is a placeholder page. Financial insights will include:
+    </MudText>
+    <MudList T="string">
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Spending pattern analysis" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Budget optimization suggestions" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Savings opportunities identification" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Financial goal tracking" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Personalized recommendations" />
+    </MudList>
+</MudPaper> 

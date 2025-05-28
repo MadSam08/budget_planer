@@ -1,0 +1,151 @@
+@page "/income"
+@using Microsoft.AspNetCore.Authorization
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+<PageTitle>Income - Budget Planner</PageTitle>
+
+<div class="d-flex justify-space-between align-center mb-6">
+    <div>
+        <MudText Typo="Typo.h4" GutterBottom="true">Income Tracking</MudText>
+        <MudText Typo="Typo.body1">Track and manage your income sources.</MudText>
+    </div>
+    <MudButton Variant="Variant.Filled" 
+               Color="Color.Success" 
+               StartIcon="Icons.Material.Filled.Add"
+               Href="/income/create">
+        Add Income
+    </MudButton>
+</div>
+
+<MudGrid Class="mb-6">
+    <!-- Summary Cards -->
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="Icons.Material.Filled.TrendingUp" Color="Color.Success" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h5">$4,500</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">This Month</MudText>
+                    </div>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="Icons.Material.Filled.CalendarMonth" Color="Color.Primary" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h5">$4,200</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Average Monthly</MudText>
+                    </div>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="Icons.Material.Filled.Assessment" Color="Color.Warning" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h5">$54,000</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Year to Date</MudText>
+                    </div>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="Icons.Material.Filled.Source" Color="Color.Tertiary" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h5">3</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Income Sources</MudText>
+                    </div>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Recent Income</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudIconButton Icon="Icons.Material.Filled.FilterList" Color="Color.Default" />
+            <MudIconButton Icon="Icons.Material.Filled.Search" Color="Color.Default" />
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudTable Items="@GetIncomeData()" Hover="true" Striped="true">
+            <HeaderContent>
+                <MudTh>Description</MudTh>
+                <MudTh>Category</MudTh>
+                <MudTh>Amount</MudTh>
+                <MudTh>Date</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+                <MudTd DataLabel="Category">
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success">@context.Category</MudChip>
+                </MudTd>
+                <MudTd DataLabel="Amount">
+                    <MudText Color="Color.Success" Typo="Typo.body2">@($"{context.Amount:C}")</MudText>
+                </MudTd>
+                <MudTd DataLabel="Date">@context.Date.ToString("MMM dd, yyyy")</MudTd>
+                <MudTd DataLabel="Actions">
+                    <MudIconButton Icon="Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" />
+                    <MudIconButton Icon="Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudCardContent>
+</MudCard>
+
+<MudPaper Class="pa-4 mt-6">
+    <MudText Typo="Typo.h6" GutterBottom="true">Income Management Features</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
+        This is a placeholder page. Income management functionality will include:
+    </MudText>
+    <MudList T="string">
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Add and categorize income sources" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Track recurring income" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Income trends and analytics" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Export income reports" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Tax preparation support" />
+    </MudList>
+</MudPaper>
+
+@code {
+    private List<IncomeModel> GetIncomeData()
+    {
+        return new List<IncomeModel>
+        {
+            new() { Description = "Salary - Tech Corp", Category = "Employment", Amount = 4500.00m, Date = DateTime.Now.AddDays(-1) },
+            new() { Description = "Freelance Project", Category = "Freelance", Amount = 750.00m, Date = DateTime.Now.AddDays(-5) },
+            new() { Description = "Investment Dividends", Category = "Investments", Amount = 125.00m, Date = DateTime.Now.AddDays(-10) },
+            new() { Description = "Side Business", Category = "Business", Amount = 300.00m, Date = DateTime.Now.AddDays(-15) },
+            new() { Description = "Bonus Payment", Category = "Employment", Amount = 1000.00m, Date = DateTime.Now.AddDays(-20) }
+        };
+    }
+
+    public class IncomeModel
+    {
+        public string Description { get; set; } = "";
+        public string Category { get; set; } = "";
+        public decimal Amount { get; set; }
+        public DateTime Date { get; set; }
+    }
+} 

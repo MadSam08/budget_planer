@@ -1,12 +1,12 @@
 ﻿using BudgetPlaner.Api.Bootstrap;
 using BudgetPlaner.Api.Constants.EndpointNames;
-using BudgetPlaner.Api.DatabaseContext;
 using BudgetPlaner.Api.Extensions;
 using BudgetPlaner.Api.Mappers;
 using BudgetPlaner.Contracts.Api;
 using BudgetPlaner.Contracts.Api.Loan;
 using BudgetPlaner.Domain;
 using BudgetPlaner.Infrastructure.DatabaseContext;
+using BudgetPlaner.Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sqids;
@@ -20,23 +20,23 @@ public class SpendingEndpointDefinitions : IEndpointDefinition
     public void DefineEndpoints(WebApplication app)
     {
         app.MapGet(BasePath, GetSpendings)
-            .WithTags(SwaggerTags.IncomeTag)
+            .WithTags(SwaggerTags.SpendingTag)
             .RequireAuthorization();
 
         app.MapGet(BasePath + "/{id}", GetSpending)
-            .WithTags(SwaggerTags.IncomeTag)
+            .WithTags(SwaggerTags.SpendingTag)
             .RequireAuthorization();
 
         app.MapPost(BasePath, AddSpending)
-            .WithTags(SwaggerTags.IncomeTag)
+            .WithTags(SwaggerTags.SpendingTag)
             .RequireAuthorization();
 
         app.MapPut(BasePath + "/{id}", UpdateSpending)
-            .WithTags(SwaggerTags.IncomeTag)
+            .WithTags(SwaggerTags.SpendingTag)
             .RequireAuthorization();
         
         app.MapDelete(BasePath + "/{id}", DeleteSpending)
-            .WithTags(SwaggerTags.IncomeTag)
+            .WithTags(SwaggerTags.SpendingTag)
             .RequireAuthorization();
     }
     
@@ -65,10 +65,10 @@ public class SpendingEndpointDefinitions : IEndpointDefinition
         if (string.IsNullOrEmpty(userId))
             return Results.BadRequest();
 
-        var category = await unitOfWork.Repository<IncomeEntity>()
+        var spending = await unitOfWork.Repository<SpendingEntity>()
             .FirstOrDefaultAsync(x => x.Id == idDecoded && x.UserId.Equals(userId));
 
-        return category == null ? Results.BadRequest() : Results.Ok(category.MapToModel(sqidsEncoder));
+        return spending == null ? Results.BadRequest() : Results.Ok(spending.MapToModel(sqidsEncoder));
     }
 
     private static async Task<IResult> AddSpending([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
@@ -127,10 +127,10 @@ public class SpendingEndpointDefinitions : IEndpointDefinition
         if (string.IsNullOrEmpty(userId))
             return Results.BadRequest();
 
-        await unitOfWork.Repository<SpendingEntity>()
-            .DeleteAsync(x => x.Id == idDecoded && x.UserId.Equals(userId));
+        var deletedCount = await unitOfWork.Repository<SpendingEntity>()
+            .ExecuteDeleteAsync(x => x.Id == idDecoded && x.UserId.Equals(userId));
 
-        return Results.NoContent();
+        return deletedCount > 0 ? Results.NoContent() : Results.NotFound();
     }
 
     public void DefineServices(IServiceCollection services)

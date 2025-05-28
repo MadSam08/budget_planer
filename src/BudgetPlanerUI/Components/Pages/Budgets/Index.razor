@@ -1,0 +1,91 @@
+@page "/budgets"
+@using Microsoft.AspNetCore.Authorization
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+<PageTitle>My Budgets - Budget Planner</PageTitle>
+
+<div class="d-flex justify-space-between align-center mb-6">
+    <div>
+        <MudText Typo="Typo.h4" GutterBottom="true">My Budgets</MudText>
+        <MudText Typo="Typo.body1">Manage your budgets and track your financial goals.</MudText>
+    </div>
+    <MudButton Variant="Variant.Filled" 
+               Color="Color.Primary" 
+               StartIcon="Icons.Material.Filled.Add"
+               Href="/budgets/create">
+        Create Budget
+    </MudButton>
+</div>
+
+<MudGrid>
+    <!-- Placeholder Budget Cards -->
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.h6" GutterBottom="true">Monthly Budget</MudText>
+                <MudProgressLinear Value="75" Color="Color.Success" Class="my-2" />
+                <div class="d-flex justify-space-between align-center">
+                    <MudText Typo="Typo.body2">$3,750 / $5,000</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success">Active</MudChip>
+                </div>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Size="Size.Small" Color="Color.Primary">View Details</MudButton>
+                <MudButton Size="Size.Small" Color="Color.Secondary">Edit</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.h6" GutterBottom="true">Vacation Fund</MudText>
+                <MudProgressLinear Value="45" Color="Color.Warning" Class="my-2" />
+                <div class="d-flex justify-space-between align-center">
+                    <MudText Typo="Typo.body2">$1,125 / $2,500</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Info">Planning</MudChip>
+                </div>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Size="Size.Small" Color="Color.Primary">View Details</MudButton>
+                <MudButton Size="Size.Small" Color="Color.Secondary">Edit</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" md="6" lg="4">
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.h6" GutterBottom="true">Emergency Fund</MudText>
+                <MudProgressLinear Value="90" Color="Color.Error" Class="my-2" />
+                <div class="d-flex justify-space-between align-center">
+                    <MudText Typo="Typo.body2">$4,500 / $5,000</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Error">Near Limit</MudChip>
+                </div>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Size="Size.Small" Color="Color.Primary">View Details</MudButton>
+                <MudButton Size="Size.Small" Color="Color.Secondary">Edit</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<MudPaper Class="pa-4 mt-6">
+    <MudText Typo="Typo.h6" GutterBottom="true">Budget Overview</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary">
+        This is a placeholder page. Budget management functionality will be implemented here with:
+    </MudText>
+    <MudList T="string">
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Budget creation and editing" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Category allocation" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Budget tracking and alerts" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Progress visualization" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Budget analysis and insights" />
+    </MudList>
+</MudPaper>
+
+@code {
+    // Placeholder - will implement budget logic here
+} 

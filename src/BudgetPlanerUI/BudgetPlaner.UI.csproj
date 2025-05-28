@@ -10,9 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Htmx" Version="1.8.1" />
-    <PackageReference Include="MudBlazor" Version="7.15.0" />
-    <ProjectReference Include="..\..\BudgetPlaner.Contracts\BudgetPlaner.Contracts.csproj" />
+    <PackageReference Include="MudBlazor" Version="8.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <ProjectReference Include="..\BudgetPlaner.Contracts\BudgetPlaner.Contracts.csproj" />
@@ -29,10 +27,7 @@
     <Content Update="wwwroot\content\images\sign-up.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Update="Style\tailwind.css">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+
   </ItemGroup>
 
   <ItemGroup>

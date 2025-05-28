@@ -91,6 +91,11 @@ public class Repository<T> : IRepository<T> where T : class
         _dbSet.RemoveRange(entities);
     }
 
+    public async Task<int> ExecuteDeleteAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbSet.Where(predicate).ExecuteDeleteAsync();
+    }
+
     public async Task<int> CountAsync()
     {
         return await _dbSet.CountAsync();

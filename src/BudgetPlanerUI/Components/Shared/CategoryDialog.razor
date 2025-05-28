@@ -1,0 +1,132 @@
+@using BudgetPlaner.Contracts.Api.Category
+@using BudgetPlaner.UI.ApiClients
+@using CategoryTypes = BudgetPlaner.Contracts.Api.Category.CategoryTypes
+
+<MudDialog @ref="MudDialog">
+    <DialogContent>
+        <MudContainer Style="max-width: 500px;">
+            <MudText Typo="Typo.h6" GutterBottom="true">
+                @(IsEdit ? "Edit Category" : "Add New Category")
+            </MudText>
+
+            <EditForm Model="@_category" OnValidSubmit="@SubmitAsync">
+                <DataAnnotationsValidator/>
+
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_category.Name"
+                                      Label="Category Name"
+                                      Required="true"
+                                      HelperText="Enter a descriptive name for your category"
+                                      Variant="Variant.Outlined"/>
+                        <ValidationMessage For="@(() => _category.Name)"/>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudSelect @bind-Value="_category.CategoryTypes" Label="Category Type">
+                            @foreach (var categoryTypes in Enum.GetValues(typeof(CategoryTypes)).Cast<CategoryTypes>())
+                            {
+                                <MudSelectItem Value="categoryTypes">@categoryTypes</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <ValidationMessage For="@(() => _category.CategoryTypes)"/>
+                    </MudItem>
+                </MudGrid>
+            </EditForm>
+        </MudContainer>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary"
+                   Variant="Variant.Filled"
+                   OnClick="@SubmitAsync"
+                   Disabled="@_isSubmitting">
+            @if (_isSubmitting)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                <MudText Class="ms-2">@(IsEdit ? "Updating..." : "Creating...")</MudText>
+            }
+            else
+            {
+                <MudText>@(IsEdit ? "Update" : "Create")</MudText>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public CategoryRequest? Category { get; set; }
+    [Parameter] public bool IsEdit { get; set; }
+    [Inject] private ICategoryService CategoryService { get; set; } = null!;
+    [Inject] private ISnackbar Snackbar { get; set; } = null!;
+
+    private MudDialog? MudDialog { get; set; }
+
+    private CategoryRequest _category = new() { Id = "", Name = "", CategoryTypes = CategoryTypes.Default };
+    private bool _isSubmitting = false;
+
+    protected override void OnInitialized()
+    {
+        if (Category != null && IsEdit)
+        {
+            _category = new CategoryRequest
+            {
+                Id = Category.Id,
+                Name = Category.Name,
+                CategoryTypes = Category.CategoryTypes
+            };
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_category.Name))
+        {
+            Snackbar.Add("Category name is required", Severity.Error);
+            return;
+        }
+
+        _isSubmitting = true;
+        StateHasChanged();
+
+        bool success;
+        if (IsEdit)
+        {
+            success = await CategoryService.UpdateCategoryAsync(_category.Id, _category);
+            if (success)
+            {
+                Snackbar.Add("Category updated successfully", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Failed to update category", Severity.Error);
+            }
+        }
+        else
+        {
+            success = await CategoryService.CreateCategoryAsync(_category);
+            if (success)
+            {
+                Snackbar.Add("Category created successfully", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Failed to create category", Severity.Error);
+            }
+        }
+
+        _isSubmitting = false;
+
+        if (success)
+        {
+            await MudDialog?.CloseAsync(DialogResult.Ok(true));
+        }
+        else
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task Cancel() => await MudDialog?.CloseAsync();
+} 

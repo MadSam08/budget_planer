@@ -1,0 +1,167 @@
+@page "/reports"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<PageTitle>Reports - Budget Planner</PageTitle>
+
+<div class="d-flex justify-space-between align-center mb-6">
+    <div>
+        <MudText Typo="Typo.h4" GutterBottom="true">Financial Reports</MudText>
+        <MudText Typo="Typo.body1">Generate detailed reports and analytics for your finances.</MudText>
+    </div>
+    <MudButton Variant="Variant.Filled" 
+               Color="Color.Primary" 
+               StartIcon="Icons.Material.Filled.Download">
+        Export Report
+    </MudButton>
+</div>
+
+<!-- Report Types Grid -->
+<MudGrid Class="mb-6">
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Outlined="true" Class="cursor-pointer">
+            <MudCardContent Class="text-center">
+                <MudIcon Icon="Icons.Material.Filled.PieChart" Size="Size.Large" Color="Color.Primary" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Spending Summary</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Monthly breakdown of expenses by category
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Outlined="true" Class="cursor-pointer">
+            <MudCardContent Class="text-center">
+                <MudIcon Icon="Icons.Material.Filled.BarChart" Size="Size.Large" Color="Color.Success" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Income Analysis</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Track income sources and trends over time
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Outlined="true" Class="cursor-pointer">
+            <MudCardContent Class="text-center">
+                <MudIcon Icon="Icons.Material.Filled.Timeline" Size="Size.Large" Color="Color.Warning" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Budget Performance</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Compare actual vs budgeted amounts
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Outlined="true" Class="cursor-pointer">
+            <MudCardContent Class="text-center">
+                <MudIcon Icon="Icons.Material.Filled.TrendingUp" Size="Size.Large" Color="Color.Info" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Trends Report</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Year-over-year financial trends
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Outlined="true" Class="cursor-pointer">
+            <MudCardContent Class="text-center">
+                <MudIcon Icon="Icons.Material.Filled.Receipt" Size="Size.Large" Color="Color.Secondary" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Tax Summary</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Tax-ready expense and income summary
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Outlined="true" Class="cursor-pointer">
+            <MudCardContent Class="text-center">
+                <MudIcon Icon="Icons.Material.Filled.Assessment" Size="Size.Large" Color="Color.Tertiary" Class="mb-3" />
+                <MudText Typo="Typo.h6" GutterBottom="true">Net Worth</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Assets vs liabilities over time
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<!-- Sample Chart Area -->
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">Sample Chart: Monthly Spending Trends</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            <MudButton Size="Size.Small" Variant="Variant.Text" StartIcon="Icons.Material.Filled.DateRange">
+                Last 6 Months
+            </MudButton>
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        <div Class="d-flex justify-center align-center" Style="height: 300px; background-color: var(--mud-palette-background-grey);">
+            <div Class="text-center">
+                <MudIcon Icon="Icons.Material.Filled.BarChart" Size="Size.Large" Color="Color.Secondary" Class="mb-2" />
+                <MudText Typo="Typo.h6" Color="Color.Secondary">Chart Placeholder</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    Interactive charts will be implemented here using Chart.js or ApexCharts
+                </MudText>
+            </div>
+        </div>
+    </MudCardContent>
+</MudCard>
+
+<!-- Quick Stats -->
+<MudGrid Class="mt-6">
+    <MudItem xs="12" md="3">
+        <MudPaper Class="pa-4 text-center">
+            <MudIcon Icon="Icons.Material.Filled.MonetizationOn" Size="Size.Large" Color="Color.Success" Class="mb-2" />
+            <MudText Typo="Typo.h5">$52,400</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Total Income (YTD)</MudText>
+        </MudPaper>
+    </MudItem>
+    
+    <MudItem xs="12" md="3">
+        <MudPaper Class="pa-4 text-center">
+            <MudIcon Icon="Icons.Material.Filled.ShoppingCart" Size="Size.Large" Color="Color.Error" Class="mb-2" />
+            <MudText Typo="Typo.h5">$38,200</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Total Expenses (YTD)</MudText>
+        </MudPaper>
+    </MudItem>
+    
+    <MudItem xs="12" md="3">
+        <MudPaper Class="pa-4 text-center">
+            <MudIcon Icon="Icons.Material.Filled.Savings" Size="Size.Large" Color="Color.Primary" Class="mb-2" />
+            <MudText Typo="Typo.h5">$14,200</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Total Savings (YTD)</MudText>
+        </MudPaper>
+    </MudItem>
+    
+    <MudItem xs="12" md="3">
+        <MudPaper Class="pa-4 text-center">
+            <MudIcon Icon="Icons.Material.Filled.Percent" Size="Size.Large" Color="Color.Warning" Class="mb-2" />
+            <MudText Typo="Typo.h5">27%</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">Savings Rate</MudText>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<MudPaper Class="pa-4 mt-6">
+    <MudText Typo="Typo.h6" GutterBottom="true">Advanced Reporting Features</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
+        This is a placeholder page. Advanced reporting will include:
+    </MudText>
+    <MudList T="string">
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Interactive charts and graphs with drill-down capabilities" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Custom date range selection and filtering" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Export to PDF, Excel, and CSV formats" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Scheduled automatic report generation" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Comparative analysis (month-over-month, year-over-year)" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Tax preparation and compliance reports" />
+    </MudList>
+</MudPaper> 

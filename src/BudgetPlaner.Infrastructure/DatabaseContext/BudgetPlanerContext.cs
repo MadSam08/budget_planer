@@ -42,6 +42,7 @@ public class BudgetPlanerContext : DbContext
         modelBuilder.Entity<IncomeEntity>().HasOne(x => x.Currency)
             .WithMany()
             .HasForeignKey(x => x.CurrencyId);
+        
         modelBuilder.Entity<IncomeEntity>().HasOne(x => x.Category)
             .WithMany()
             .HasForeignKey(x => x.CategoryId);

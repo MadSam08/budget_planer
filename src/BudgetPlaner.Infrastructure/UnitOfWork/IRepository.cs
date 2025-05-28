@@ -29,6 +29,7 @@ public interface IRepository<T> where T : class
     // Remove methods
     void Remove(T entity);
     void RemoveRange(IEnumerable<T> entities);
+    Task<int> ExecuteDeleteAsync(Expression<Func<T, bool>> predicate);
     
     // Count methods
     Task<int> CountAsync();

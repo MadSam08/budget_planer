@@ -21,7 +21,7 @@ public static class CreditMapper
             BankName = model.BankName,
             TotalAmount = model.TotalValue,
             APR = model.APR,
-            CreditStatus = (int)model.CreditStatus
+            Status = (LoanStatus)model.CreditStatus
         };
     }
 
@@ -40,7 +40,7 @@ public static class CreditMapper
             TotalValue = entity.TotalAmount,
             APR = entity.APR,
             CurrencyName = entity.Currency?.Name,
-            CreditStatus = (CreditStatus)entity.CreditStatus
+            CreditStatus = (CreditStatus)entity.Status
         };
     }
 
@@ -60,7 +60,7 @@ public static class CreditMapper
             TotalValue = x.TotalAmount,
             APR = x.APR,
             CurrencyName = x.Currency?.Name,
-            CreditStatus = (CreditStatus)x.CreditStatus
+            CreditStatus = (CreditStatus)x.Status
         });
     }
 }

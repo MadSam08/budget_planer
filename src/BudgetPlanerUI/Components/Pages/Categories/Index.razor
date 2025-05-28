@@ -1,0 +1,326 @@
+@page "/categories"
+@using Microsoft.AspNetCore.Authorization
+@using BudgetPlaner.Contracts.Api.Category
+@using BudgetPlaner.UI.ApiClients
+@using BudgetPlaner.UI.Components.Shared
+@attribute [Authorize]
+@inject ICategoryService CategoryService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Categories - Budget Planner</PageTitle>
+
+<div class="d-flex justify-space-between align-center mb-6">
+    <div>
+        <MudText Typo="Typo.h4" GutterBottom="true">Categories</MudText>
+        <MudText Typo="Typo.body1">Organize your income and expenses with custom categories.</MudText>
+    </div>
+    <MudButton Variant="Variant.Filled" 
+               Color="Color.Primary" 
+               StartIcon="Icons.Material.Filled.Add"
+               OnClick="@OpenAddDialog">
+        Add Category
+    </MudButton>
+</div>
+
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mb-4" />
+}
+
+<MudGrid>
+    <MudItem xs="12" md="6">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">
+                        <MudIcon Icon="Icons.Material.Filled.TrendingUp" Class="mr-2" Color="Color.Success" />
+                        Income Categories (@_incomeCategories.Count)
+                    </MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="Icons.Material.Filled.Refresh" 
+                                   Color="Color.Default" 
+                                   OnClick="@LoadCategoriesAsync" 
+                                   Size="Size.Small" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (_incomeCategories.Any())
+                {
+                    <MudList T="CategoryRequest" Clickable="false">
+                        @foreach (var category in _incomeCategories)
+                        {
+                            <MudListItem>
+                                <div class="d-flex justify-space-between align-center w-100">
+                                    <div class="d-flex align-center">
+                                        <MudIcon Icon="@GetCategoryIcon(category)" Class="mr-3" Color="Color.Success" />
+                                        <MudText Typo="Typo.body1">@category.Name</MudText>
+                                    </div>
+                                    <div>
+                                        <MudIconButton Icon="Icons.Material.Filled.Edit" 
+                                                       Size="Size.Small" 
+                                                       Color="Color.Primary"
+                                                       OnClick="@(() => OpenEditDialog(category))" />
+                                        <MudIconButton Icon="Icons.Material.Filled.Delete" 
+                                                       Size="Size.Small" 
+                                                       Color="Color.Error"
+                                                       OnClick="@(() => DeleteCategoryAsync(category))" />
+                                    </div>
+                                </div>
+                            </MudListItem>
+                            <MudDivider />
+                        }
+                    </MudList>
+                }
+                else
+                {
+                    <div class="text-center pa-4">
+                        <MudIcon Icon="Icons.Material.Filled.Category" Size="Size.Large" Color="Color.Secondary" />
+                        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-2">
+                            No income categories yet. Create your first one!
+                        </MudText>
+                    </div>
+                }
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" md="6">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">
+                        <MudIcon Icon="Icons.Material.Filled.TrendingDown" Class="mr-2" Color="Color.Error" />
+                        Expense Categories (@_expenseCategories.Count)
+                    </MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="Icons.Material.Filled.Refresh" 
+                                   Color="Color.Default" 
+                                   OnClick="@LoadCategoriesAsync" 
+                                   Size="Size.Small" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (_expenseCategories.Any())
+                {
+                    <MudList T="CategoryRequest" Clickable="false">
+                        @foreach (var category in _expenseCategories)
+                        {
+                            <MudListItem>
+                                <div class="d-flex justify-space-between align-center w-100">
+                                    <div class="d-flex align-center">
+                                        <MudIcon Icon="@GetCategoryIcon(category)" Class="mr-3" Color="Color.Error" />
+                                        <MudText Typo="Typo.body1">@category.Name</MudText>
+                                    </div>
+                                    <div>
+                                        <MudIconButton Icon="Icons.Material.Filled.Edit" 
+                                                       Size="Size.Small" 
+                                                       Color="Color.Primary"
+                                                       OnClick="@(() => OpenEditDialog(category))" />
+                                        <MudIconButton Icon="Icons.Material.Filled.Delete" 
+                                                       Size="Size.Small" 
+                                                       Color="Color.Error"
+                                                       OnClick="@(() => DeleteCategoryAsync(category))" />
+                                    </div>
+                                </div>
+                            </MudListItem>
+                            <MudDivider />
+                        }
+                    </MudList>
+                }
+                else
+                {
+                    <div class="text-center pa-4">
+                        <MudIcon Icon="Icons.Material.Filled.Category" Size="Size.Large" Color="Color.Secondary" />
+                        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-2">
+                            No expense categories yet. Create your first one!
+                        </MudText>
+                    </div>
+                }
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    @if (_generalCategories.Any())
+    {
+        <MudItem xs="12">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">
+                            <MudIcon Icon="Icons.Material.Filled.Category" Class="mr-2" Color="Color.Primary" />
+                            General Categories (@_generalCategories.Count)
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudList T="CategoryRequest" Clickable="false">
+                        @foreach (var category in _generalCategories)
+                        {
+                            <MudListItem>
+                                <div class="d-flex justify-space-between align-center w-100">
+                                    <div class="d-flex align-center">
+                                        <MudIcon Icon="@GetCategoryIcon(category)" Class="mr-3" Color="Color.Primary" />
+                                        <MudText Typo="Typo.body1">@category.Name</MudText>
+                                    </div>
+                                    <div>
+                                        <MudIconButton Icon="Icons.Material.Filled.Edit" 
+                                                       Size="Size.Small" 
+                                                       Color="Color.Primary"
+                                                       OnClick="@(() => OpenEditDialog(category))" />
+                                        <MudIconButton Icon="Icons.Material.Filled.Delete" 
+                                                       Size="Size.Small" 
+                                                       Color="Color.Error"
+                                                       OnClick="@(() => DeleteCategoryAsync(category))" />
+                                    </div>
+                                </div>
+                            </MudListItem>
+                            <MudDivider />
+                        }
+                    </MudList>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+@if (!_categories.Any() && !_isLoading)
+{
+    <MudPaper Class="pa-8 mt-6 text-center">
+        <MudIcon Icon="Icons.Material.Filled.Category" Size="Size.Large" Color="Color.Secondary" />
+        <MudText Typo="Typo.h6" Class="mt-4" Color="Color.Secondary">No Categories Yet</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
+            Get started by creating your first category to organize your finances.
+        </MudText>
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Primary" 
+                   StartIcon="Icons.Material.Filled.Add"
+                   OnClick="@OpenAddDialog">
+            Create Your First Category
+        </MudButton>
+    </MudPaper>
+}
+
+@code {
+    private List<CategoryRequest> _categories = new();
+    private List<CategoryRequest> _incomeCategories = new();
+    private List<CategoryRequest> _expenseCategories = new();
+    private List<CategoryRequest> _generalCategories = new();
+    private bool _isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategoriesAsync();
+    }
+
+    private async Task LoadCategoriesAsync()
+    {
+        _isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            _categories = await CategoryService.GetCategoriesAsync();
+            GroupCategories();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Failed to load categories", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void GroupCategories()
+    {
+        _incomeCategories = _categories.Where(c => c.CategoryTypes == BudgetPlaner.Contracts.Api.Category.CategoryTypes.Income).ToList();
+        _expenseCategories = _categories.Where(c => c.CategoryTypes == BudgetPlaner.Contracts.Api.Category.CategoryTypes.Spending).ToList();
+        _generalCategories = _categories.Where(c => c.CategoryTypes == BudgetPlaner.Contracts.Api.Category.CategoryTypes.Default).ToList();
+    }
+
+    private async Task OpenAddDialog()
+    {
+        var parameters = new DialogParameters
+        {
+            { "IsEdit", false }
+        };
+
+        var options = new DialogOptions() 
+        { 
+            CloseButton = true, 
+            MaxWidth = MaxWidth.Small, 
+            FullWidth = true 
+        };
+
+        var dialog = await DialogService.ShowAsync<CategoryDialog>("Add Category", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadCategoriesAsync();
+        }
+    }
+
+    private async Task OpenEditDialog(CategoryRequest category)
+    {
+        var parameters = new DialogParameters
+        {
+            { "Category", category },
+            { "IsEdit", true }
+        };
+
+        var options = new DialogOptions() 
+        { 
+            CloseButton = true, 
+            MaxWidth = MaxWidth.Small, 
+            FullWidth = true 
+        };
+
+        var dialog = await DialogService.ShowAsync<CategoryDialog>("Edit Category", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadCategoriesAsync();
+        }
+    }
+
+    private async Task DeleteCategoryAsync(CategoryRequest category)
+    {
+        var messageBox = await DialogService.ShowMessageBox("Delete Category", 
+            $"Are you sure you want to delete the category '{category.Name}'? This action cannot be undone.",
+            yesText: "Delete", 
+            noText: "Cancel",
+            options: new DialogOptions() { CloseButton = true });
+
+        if (messageBox == true)
+        {
+            var success = await CategoryService.DeleteCategoryAsync(category.Id);
+            if (success)
+            {
+                Snackbar.Add("Category deleted successfully", Severity.Success);
+                await LoadCategoriesAsync();
+            }
+            else
+            {
+                Snackbar.Add("Failed to delete category", Severity.Error);
+            }
+        }
+    }
+
+    private string GetCategoryIcon(CategoryRequest category)
+    {
+        return category.CategoryTypes switch
+        {
+            BudgetPlaner.Contracts.Api.Category.CategoryTypes.Income => Icons.Material.Filled.TrendingUp,
+            BudgetPlaner.Contracts.Api.Category.CategoryTypes.Spending => Icons.Material.Filled.TrendingDown,
+            BudgetPlaner.Contracts.Api.Category.CategoryTypes.Default => Icons.Material.Filled.Category,
+            _ => Icons.Material.Filled.Category
+        };
+    }
+} 

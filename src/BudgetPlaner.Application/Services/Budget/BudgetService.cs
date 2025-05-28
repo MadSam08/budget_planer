@@ -61,15 +61,10 @@ public class BudgetService(IUnitOfWork<BudgetPlanerContext> unitOfWork) : IBudge
 
     public async Task<bool> DeleteBudgetAsync(int budgetId, string userId)
     {
-        var budget = await unitOfWork.Repository<BudgetEntity>()
-            .Where(b => b.Id == budgetId && b.UserId == userId)
-            .FirstOrDefaultAsync();
+        var deletedCount = await unitOfWork.Repository<BudgetEntity>()
+            .ExecuteDeleteAsync(b => b.Id == budgetId && b.UserId == userId);
 
-        if (budget == null) return false;
-
-        unitOfWork.Repository<BudgetEntity>().Remove(budget);
-        await unitOfWork.Complete();
-        return true;
+        return deletedCount > 0;
     }
 
     public async Task<BudgetCategoryEntity> AddCategoryToBudgetAsync(int budgetId, int categoryId, decimal allocatedAmount, string userId)
@@ -113,15 +108,10 @@ public class BudgetService(IUnitOfWork<BudgetPlanerContext> unitOfWork) : IBudge
 
     public async Task<bool> RemoveCategoryFromBudgetAsync(int budgetCategoryId, string userId)
     {
-        var budgetCategory = await unitOfWork.Repository<BudgetCategoryEntity>()
-            .Where(bc => bc.Id == budgetCategoryId && bc.UserId == userId)
-            .FirstOrDefaultAsync();
+        var deletedCount = await unitOfWork.Repository<BudgetCategoryEntity>()
+            .ExecuteDeleteAsync(bc => bc.Id == budgetCategoryId && bc.UserId == userId);
 
-        if (budgetCategory == null) return false;
-
-        unitOfWork.Repository<BudgetCategoryEntity>().Remove(budgetCategory);
-        await unitOfWork.Complete();
-        return true;
+        return deletedCount > 0;
     }
 
     public async Task<decimal> GetBudgetUtilizationAsync(int budgetId, string userId)

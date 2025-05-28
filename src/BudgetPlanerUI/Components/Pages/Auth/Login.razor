@@ -1,0 +1,233 @@
+@page "/login"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using BudgetPlaner.UI.ApiClients.Identity
+@using BudgetPlaner.UI.Services
+@using Microsoft.AspNetCore.Identity.Data
+@inject IIdentityService IdentityService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IHttpContextAccessor HttpContextAccessor
+@attribute [ExcludeFromInteractiveRouting]
+
+<PageTitle>Sign In - Budget Planner</PageTitle>
+
+<div class="container-fluid vh-100">
+    <div class="row h-100">
+        <div class="col-md-6 d-flex align-items-center justify-content-center">
+            <div class="card shadow-lg" style="width: 100%; max-width: 400px;">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <h2 class="card-title">Welcome Back</h2>
+                        <p class="text-muted">Sign in to your Budget Planner account</p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            @errorMessage
+                        </div>
+                    }
+
+                    <form method="post" @onsubmit="HandleSubmit" @formname="login">
+                        <AntiforgeryToken />
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope"></i>
+                                </span>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="email" 
+                                       name="Email"
+                                       @bind="Email" 
+                                       placeholder="Enter your email"
+                                       required />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock"></i>
+                                </span>
+                                <input type="@(showPassword ? "text" : "password")" 
+                                       class="form-control" 
+                                       id="password" 
+                                       name="Password"
+                                       @bind="Password" 
+                                       placeholder="Enter your password"
+                                       required />
+                                <button type="button" 
+                                        class="btn btn-outline-secondary" 
+                                        @onclick="TogglePasswordVisibility">
+                                    <i class="bi @(showPassword ? "bi-eye-slash" : "bi-eye")"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe" @bind="rememberMe" />
+                            <label class="form-check-label" for="rememberMe">
+                                Remember me
+                            </label>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" 
+                                    class="btn btn-primary btn-lg" 
+                                    disabled="@isLoading">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                    <span>Signing in...</span>
+                                }
+                                else
+                                {
+                                    <span>Sign In</span>
+                                }
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <a href="/forgot-password" class="text-decoration-none">Forgot your password?</a>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="mb-0">Don't have an account? 
+                            <a href="/register" class="text-decoration-none fw-bold">Sign up</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 d-none d-md-flex align-items-center justify-content-center bg-primary bg-gradient">
+            <div class="text-center text-white p-5">
+                <i class="bi bi-piggy-bank display-1 mb-4"></i>
+                <h1 class="display-4 fw-bold mb-3">Budget Planner</h1>
+                <p class="lead">Take control of your finances with our comprehensive budgeting tools. Track expenses, set goals, and achieve financial freedom.</p>
+                <div class="row mt-5">
+                    <div class="col-4 text-center">
+                        <i class="bi bi-graph-up display-6"></i>
+                        <p class="mt-2">Track Spending</p>
+                    </div>
+                    <div class="col-4 text-center">
+                        <i class="bi bi-target display-6"></i>
+                        <p class="mt-2">Set Goals</p>
+                    </div>
+                    <div class="col-4 text-center">
+                        <i class="bi bi-shield-check display-6"></i>
+                        <p class="mt-2">Secure</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+    
+    [SupplyParameterFromForm]
+    public string Email { get; set; } = "";
+    [SupplyParameterFromForm]
+    public string Password { get; set; } = "";
+    
+    private bool rememberMe = false;
+    private bool showPassword = false;
+    private bool isLoading = false;
+    private string errorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+      
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (isLoading) return;
+
+        errorMessage = "";
+        isLoading = true;
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+            {
+                errorMessage = "Please enter both email and password.";
+                return;
+            }
+
+            // Call the API to authenticate
+            var loginResponse = await IdentityService.SignInAsync(new LoginRequest
+            {
+                Email = Email,
+                Password = Password
+            });
+
+            if (loginResponse != null)
+            {
+                // Create the principal with claims
+                var principal = SignInService.GetPrincipal(loginResponse);
+                
+                // Sign in using HttpContext - this will automatically update the AuthenticationStateProvider
+                var httpContext = HttpContextAccessor.HttpContext;
+                if (httpContext != null)
+                {
+                    await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                    
+                    // Store tokens in secure cookies
+                    httpContext.Response.Cookies.Append("accessToken", loginResponse.AccessToken!, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict,
+                        Expires = DateTime.UtcNow.AddMinutes(60)
+                    });
+                    
+                    httpContext.Response.Cookies.Append("refreshToken", loginResponse.RefreshToken!, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict,
+                        Expires = DateTime.UtcNow.AddMinutes(60)
+                    });
+                }
+
+                var redirectUrl = !string.IsNullOrEmpty(ReturnUrl) ? ReturnUrl : "/";
+                Navigation.NavigateTo(redirectUrl, forceLoad: true);
+            }
+            else
+            {
+                errorMessage = "Invalid email or password.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "An unexpected error occurred. Please try again.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+} 

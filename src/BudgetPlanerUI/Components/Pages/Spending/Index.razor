@@ -1,0 +1,225 @@
+@page "/spending"
+@using Microsoft.AspNetCore.Authorization
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+<PageTitle>Expenses - Budget Planner</PageTitle>
+
+<div class="d-flex justify-space-between align-center mb-6">
+    <div>
+        <MudText Typo="Typo.h4" GutterBottom="true">Expense Tracking</MudText>
+        <MudText Typo="Typo.body1">Track and categorize your expenses.</MudText>
+    </div>
+    <MudButton Variant="Variant.Filled" 
+               Color="Color.Primary" 
+               StartIcon="Icons.Material.Filled.Add"
+               Href="/spending/create">
+        Add Expense
+    </MudButton>
+</div>
+
+<MudGrid Class="mb-6">
+    <!-- Summary Cards -->
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="Icons.Material.Filled.TrendingDown" Color="Color.Error" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h5">$2,350</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">This Month</MudText>
+                    </div>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="Icons.Material.Filled.CalendarMonth" Color="Color.Warning" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h5">$2,100</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Average Monthly</MudText>
+                    </div>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="Icons.Material.Filled.Category" Color="Color.Info" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h5">$850</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Top Category</MudText>
+                    </div>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard>
+            <MudCardContent>
+                <div class="d-flex align-center">
+                    <MudIcon Icon="Icons.Material.Filled.Receipt" Color="Color.Tertiary" Size="Size.Large" Class="mr-3" />
+                    <div>
+                        <MudText Typo="Typo.h5">47</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">Transactions</MudText>
+                    </div>
+                </div>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<!-- Spending by Category -->
+<MudGrid Class="mb-6">
+    <MudItem xs="12" md="8">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Recent Expenses</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIconButton Icon="Icons.Material.Filled.FilterList" Color="Color.Default" />
+                    <MudIconButton Icon="Icons.Material.Filled.Search" Color="Color.Default" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudTable Items="@GetExpenseData()" Hover="true" Striped="true">
+                    <HeaderContent>
+                        <MudTh>Description</MudTh>
+                        <MudTh>Category</MudTh>
+                        <MudTh>Amount</MudTh>
+                        <MudTh>Date</MudTh>
+                        <MudTh>Actions</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Description">@context.Description</MudTd>
+                        <MudTd DataLabel="Category">
+                            <MudChip T="string" Size="Size.Small" Color="@GetCategoryColor(context.Category)">@context.Category</MudChip>
+                        </MudTd>
+                        <MudTd DataLabel="Amount">
+                            <MudText Color="Color.Error" Typo="Typo.body2">@($"-{context.Amount:C}")</MudText>
+                        </MudTd>
+                        <MudTd DataLabel="Date">@context.Date.ToString("MMM dd, yyyy")</MudTd>
+                        <MudTd DataLabel="Actions">
+                            <MudIconButton Icon="Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" />
+                            <MudIconButton Icon="Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" />
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    
+    <!-- Category Breakdown -->
+    <MudItem xs="12" md="4">
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Category Breakdown</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudStack Spacing="3">
+                    <div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <MudText Typo="Typo.body2">Food & Dining</MudText>
+                            <MudText Typo="Typo.body2">$850</MudText>
+                        </div>
+                        <MudProgressLinear Value="85" Color="Color.Primary" />
+                    </div>
+                    
+                    <div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <MudText Typo="Typo.body2">Transportation</MudText>
+                            <MudText Typo="Typo.body2">$320</MudText>
+                        </div>
+                        <MudProgressLinear Value="32" Color="Color.Success" />
+                    </div>
+                    
+                    <div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <MudText Typo="Typo.body2">Shopping</MudText>
+                            <MudText Typo="Typo.body2">$290</MudText>
+                        </div>
+                        <MudProgressLinear Value="29" Color="Color.Warning" />
+                    </div>
+                    
+                    <div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <MudText Typo="Typo.body2">Entertainment</MudText>
+                            <MudText Typo="Typo.body2">$180</MudText>
+                        </div>
+                        <MudProgressLinear Value="18" Color="Color.Info" />
+                    </div>
+                    
+                    <div>
+                        <div class="d-flex justify-space-between mb-1">
+                            <MudText Typo="Typo.body2">Utilities</MudText>
+                            <MudText Typo="Typo.body2">$150</MudText>
+                        </div>
+                        <MudProgressLinear Value="15" Color="Color.Secondary" />
+                    </div>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h6" GutterBottom="true">Expense Management Features</MudText>
+    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
+        This is a placeholder page. Expense management functionality will include:
+    </MudText>
+    <MudList T="string">
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Quick expense entry with camera receipt scanning" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Automatic categorization with AI" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Spending trends and analytics" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Budget alerts and overspending warnings" />
+        <MudListItem Icon="Icons.Material.Filled.Check" Text="Export and reporting features" />
+    </MudList>
+</MudPaper>
+
+@code {
+    private List<ExpenseModel> GetExpenseData()
+    {
+        return new List<ExpenseModel>
+        {
+            new() { Description = "Grocery Store", Category = "Food", Amount = 125.50m, Date = DateTime.Now.AddDays(-1) },
+            new() { Description = "Gas Station", Category = "Transportation", Amount = 45.30m, Date = DateTime.Now.AddDays(-2) },
+            new() { Description = "Coffee Shop", Category = "Food", Amount = 8.75m, Date = DateTime.Now.AddDays(-3) },
+            new() { Description = "Online Shopping", Category = "Shopping", Amount = 89.99m, Date = DateTime.Now.AddDays(-4) },
+            new() { Description = "Movie Theater", Category = "Entertainment", Amount = 24.00m, Date = DateTime.Now.AddDays(-5) },
+            new() { Description = "Restaurant", Category = "Food", Amount = 65.25m, Date = DateTime.Now.AddDays(-6) },
+            new() { Description = "Electric Bill", Category = "Utilities", Amount = 95.00m, Date = DateTime.Now.AddDays(-7) }
+        };
+    }
+
+    private Color GetCategoryColor(string category)
+    {
+        return category switch
+        {
+            "Food" => Color.Primary,
+            "Transportation" => Color.Success,
+            "Shopping" => Color.Warning,
+            "Entertainment" => Color.Info,
+            "Utilities" => Color.Secondary,
+            _ => Color.Default
+        };
+    }
+
+    public class ExpenseModel
+    {
+        public string Description { get; set; } = "";
+        public string Category { get; set; } = "";
+        public decimal Amount { get; set; }
+        public DateTime Date { get; set; }
+    }
+} 
