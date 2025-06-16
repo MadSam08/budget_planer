@@ -70,6 +70,10 @@ public class LoanService(IUnitOfWork<BudgetPlanerContext> unitOfWork) : ILoanSer
         var monthlyRate = loan.AnnualRate / 100 / 12;
         var interestAmount = loan.RemainingBalance * monthlyRate;
         var principalAmount = Math.Min(amount - interestAmount, loan.RemainingBalance);
+        if (principalAmount < 0)
+        {
+            principalAmount = 0;
+        }
 
         var payment = new LoanPaymentEntity
         {
