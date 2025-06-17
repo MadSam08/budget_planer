@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetPlaner.Infrastructure
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetPlaner.Contracts", "src\BudgetPlaner.Contracts\BudgetPlaner.Contracts.csproj", "{E9BA02F2-7E4C-402F-B268-5B45D8DAC321}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetPlaner.Sdk", "src\BudgetPlaner.Sdk\BudgetPlaner.Sdk.csproj", "{FC64D584-B82E-45A9-B88F-9E0AA7EB4011}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{E9BA02F2-7E4C-402F-B268-5B45D8DAC321}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9BA02F2-7E4C-402F-B268-5B45D8DAC321}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9BA02F2-7E4C-402F-B268-5B45D8DAC321}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC64D584-B82E-45A9-B88F-9E0AA7EB4011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC64D584-B82E-45A9-B88F-9E0AA7EB4011}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC64D584-B82E-45A9-B88F-9E0AA7EB4011}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC64D584-B82E-45A9-B88F-9E0AA7EB4011}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +85,7 @@ Global
 		{A7F34959-6809-48DA-BD75-3E43591C47C6} = {ADD11204-0630-4F1E-926B-C80A1E4EEADF}
 		{BBBD6B43-1F5D-492D-A13E-AE9A7AE7C654} = {A5329F94-2264-4738-AA7E-8BF5F20752F9}
 		{E9BA02F2-7E4C-402F-B268-5B45D8DAC321} = {5BEF444A-47EE-4340-9A93-E3A4AD11D850}
+		{FC64D584-B82E-45A9-B88F-9E0AA7EB4011} = {5BEF444A-47EE-4340-9A93-E3A4AD11D850}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BDE7FA7B-0CAC-4676-83EB-1DE7F601C5D7}

@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using BudgetPlaner.Contracts.Api.Identity;
 using Microsoft.AspNetCore.Identity.Data;
+using RefreshRequest = Microsoft.AspNetCore.Identity.Data.RefreshRequest;
 
 namespace BudgetPlaner.UI.ApiClients.Identity;
 
