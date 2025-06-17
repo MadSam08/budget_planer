@@ -43,13 +43,8 @@ builder.Services.AddHttpClient<ITokenRefreshService, TokenRefreshService>(client
     client.BaseAddress = new Uri("http://localhost:5271"); 
     client.Timeout = TimeSpan.FromSeconds(30);
 });
-builder.Services.AddHttpClient<IUserProfileService, UserProfileService>(client =>
-{
-    client.BaseAddress = new Uri("http://localhost:5271"); 
-    client.Timeout = TimeSpan.FromSeconds(30);
-});
 
-// Register custom authentication state provider
+
 builder.Services.AddScoped<AuthenticationStateProvider, UserRevalidatingState>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

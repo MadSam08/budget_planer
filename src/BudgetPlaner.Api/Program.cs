@@ -61,28 +61,27 @@ builder.Services.AddFluentValidationAutoValidation()
     .AddFluentValidationClientsideAdapters()
     .AddValidatorsFromAssembly(typeof(IAssemblyMarker).Assembly);
 
-// Configure Identity with API endpoints
 builder.Services.AddAuthentication()
     .AddBearerToken(IdentityConstants.BearerScheme, options =>
     {
         // Set access token expiration to 30 minutes
-        options.BearerTokenExpiration = TimeSpan.FromMinutes(2);
-        
+        options.BearerTokenExpiration = TimeSpan.FromMinutes(30);
+
         // Set refresh token expiration to 7 days
         options.RefreshTokenExpiration = TimeSpan.FromDays(7);
-    })
-    .AddGoogle(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
-        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
-        options.SignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddFacebook(options =>
-    {
-        options.AppId = builder.Configuration["Authentication:Facebook:AppId"]!;
-        options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
-        options.SignInScheme = IdentityConstants.ExternalScheme;
-    });;
+    });
+    // .AddGoogle(options =>
+    // {
+    //     options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+    //     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    //     options.SignInScheme = IdentityConstants.ExternalScheme;
+    // })
+    // .AddFacebook(options =>
+    // {
+    //     options.AppId = builder.Configuration["Authentication:Facebook:AppId"]!;
+    //     options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
+    //     options.SignInScheme = IdentityConstants.ExternalScheme;
+    // });
 
 builder.Services.AddAuthorizationBuilder();
 
