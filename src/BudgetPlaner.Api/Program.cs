@@ -5,26 +5,13 @@ using BudgetPlaner.Infrastructure;
 using BudgetPlaner.Infrastructure.DatabaseContext;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.BearerToken;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sqids;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthorization();
-
-builder.Services
-    .AddAuthentication();
-
-builder.Services.AddOptions<BearerTokenOptions>(IdentityConstants.BearerScheme)
-    .Configure(options =>
-{
-    options.BearerTokenExpiration = TimeSpan.FromMinutes(10);
-});
-
 builder.Services.AddHttpContextAccessor();
 
 // Add services to the container.
@@ -68,15 +55,39 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-
 builder.Services.AddEndpointDefinitions(typeof(IAssemblyMarker));
 
 builder.Services.AddFluentValidationAutoValidation()
     .AddFluentValidationClientsideAdapters()
     .AddValidatorsFromAssembly(typeof(IAssemblyMarker).Assembly);
 
-builder.Services.AddIdentityApiEndpoints<IdentityUser>(options => { })
-    .AddEntityFrameworkStores<IdentityContext>();
+builder.Services.AddAuthentication()
+    .AddBearerToken(IdentityConstants.BearerScheme, options =>
+    {
+        // Set access token expiration to 30 minutes
+        options.BearerTokenExpiration = TimeSpan.FromMinutes(30);
+
+        // Set refresh token expiration to 7 days
+        options.RefreshTokenExpiration = TimeSpan.FromDays(7);
+    });
+    // .AddGoogle(options =>
+    // {
+    //     options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+    //     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    //     options.SignInScheme = IdentityConstants.ExternalScheme;
+    // })
+    // .AddFacebook(options =>
+    // {
+    //     options.AppId = builder.Configuration["Authentication:Facebook:AppId"]!;
+    //     options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
+    //     options.SignInScheme = IdentityConstants.ExternalScheme;
+    // });
+
+builder.Services.AddAuthorizationBuilder();
+
+builder.Services.AddIdentityCore<IdentityUser>()
+    .AddEntityFrameworkStores<IdentityContext>()
+    .AddApiEndpoints();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
@@ -92,38 +103,6 @@ builder.Services.AddSingleton(new SqidsEncoder<int>(new SqidsOptions
     MinLength = 5,
 }));
 
-var key = "budgetplanerCs3q.@WBaTi#34P"u8.ToArray();
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(key),
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromSeconds(60) // Remove delay when token expires
-        };
-    })
-    .AddGoogle(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
-        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
-        options.SignInScheme = IdentityConstants.ExternalScheme;
-    })
-    .AddFacebook(options =>
-    {
-        options.AppId = builder.Configuration["Authentication:Facebook:AppId"]!;
-        options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"]!;
-        options.SignInScheme = IdentityConstants.ExternalScheme;
-    });
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -134,11 +113,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseOutputCache();
-app.UseEndpointDefinitions();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseEndpointDefinitions();
 app.ApplyMigration();
 
 app.Run();

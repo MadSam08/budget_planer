@@ -101,10 +101,10 @@
                     <hr class="my-4">
 
                     <div class="mb-3">
-                        <button type="button" class="btn btn-outline-danger w-100 mb-2" @onclick="() => ExternalLogin('Google')">
+                    <button type="button" class="btn btn-outline-danger w-100 mb-2" @onclick="@(() => ExternalLogin(@ExternalProviders.Google))">
                             <i class="bi bi-google me-2"></i> Continue with Google
                         </button>
-                        <button type="button" class="btn btn-outline-primary w-100" @onclick="() => ExternalLogin('Facebook')">
+                        <button type="button" class="btn btn-outline-primary w-100" @onclick="@(() => ExternalLogin(@ExternalProviders.Facebook))">
                             <i class="bi bi-facebook me-2"></i> Continue with Facebook
                         </button>
                     </div>
@@ -198,28 +198,27 @@
                 // Create the principal with claims
                 var principal = SignInService.GetPrincipal(loginResponse);
                 
+                // Create authentication properties and store tokens
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = rememberMe,
+                    ExpiresUtc = DateTime.UtcNow.AddMinutes(30)
+                };
+                
+                // Store tokens in authentication properties for GetTokenAsync
+                authProperties.StoreTokens(new[]
+                {
+                    new AuthenticationToken { Name = "access_token", Value = loginResponse.AccessToken! },
+                    new AuthenticationToken { Name = "refresh_token", Value = loginResponse.RefreshToken! },
+                    new AuthenticationToken { Name = "token_type", Value = loginResponse.TokenType ?? "Bearer" },
+                    new AuthenticationToken { Name = "expires_at", Value = DateTime.UtcNow.AddSeconds(loginResponse.ExpiresIn).ToString("o") }
+                });
+                
                 // Sign in using HttpContext - this will automatically update the AuthenticationStateProvider
                 var httpContext = HttpContextAccessor.HttpContext;
                 if (httpContext != null)
                 {
-                    await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-                    
-                    // Store tokens in secure cookies
-                    httpContext.Response.Cookies.Append("accessToken", loginResponse.AccessToken!, new CookieOptions
-                    {
-                        HttpOnly = true,
-                        Secure = true,
-                        SameSite = SameSiteMode.Strict,
-                        Expires = DateTime.UtcNow.AddMinutes(60)
-                    });
-                    
-                    httpContext.Response.Cookies.Append("refreshToken", loginResponse.RefreshToken!, new CookieOptions
-                    {
-                        HttpOnly = true,
-                        Secure = true,
-                        SameSite = SameSiteMode.Strict,
-                        Expires = DateTime.UtcNow.AddMinutes(60)
-                    });
+                    await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
                 }
 
                 var redirectUrl = !string.IsNullOrEmpty(ReturnUrl) ? ReturnUrl : "/";
