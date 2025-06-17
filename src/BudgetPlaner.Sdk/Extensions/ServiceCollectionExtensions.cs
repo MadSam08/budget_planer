@@ -77,13 +77,8 @@ public static class ServiceCollectionExtensions
                 configureClient?.Invoke(client);
             });
 
-        // Register the main client
-        services.AddScoped<IBudgetPlanerClient>(provider =>
-        {
-            var httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
-            configureClient?.Invoke(httpClient);
-            return new BudgetPlanerClient(httpClient);
-        });
+        // Register the main client using the DI constructor
+        services.AddScoped<IBudgetPlanerClient, BudgetPlanerClient>();
 
         return services;
     }

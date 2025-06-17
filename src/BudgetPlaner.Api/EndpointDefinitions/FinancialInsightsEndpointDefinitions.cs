@@ -12,18 +12,24 @@ public class FinancialInsightsEndpointDefinitions : IEndpointDefinition
     public void DefineEndpoints(WebApplication app)
     {
         // Get insights
-        app.MapGet(ApiEndpoints.Insights.GetAll, GetUserInsights).RequireAuthorization();
-        app.MapGet(ApiEndpoints.Insights.Get, GetInsightById).RequireAuthorization();
-        app.MapPost(ApiEndpoints.Insights.Create, GenerateMonthlyInsights).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Insights.GetAll, GetUserInsights)
+            .WithTags(SwaggerTags.FinancialInsightTag)
+            .RequireAuthorization();
+        app.MapGet(ApiEndpoints.Insights.Get, GetInsightById)
+            .WithTags(SwaggerTags.FinancialInsightTag)
+            .RequireAuthorization();
+        app.MapPost(ApiEndpoints.Insights.Create, GenerateMonthlyInsights)            
+            .WithTags(SwaggerTags.FinancialInsightTag)
+            .RequireAuthorization();
 
         // Insight actions
-        app.MapPut(ApiEndpoints.Insights.MarkAsRead, MarkInsightAsRead).RequireAuthorization();
-        app.MapPut(ApiEndpoints.Insights.MarkActionTaken, MarkInsightActionTaken).RequireAuthorization();
+        app.MapPut(ApiEndpoints.Insights.MarkAsRead, MarkInsightAsRead).WithTags(SwaggerTags.FinancialInsightTag).RequireAuthorization();
+        app.MapPut(ApiEndpoints.Insights.MarkActionTaken, MarkInsightActionTaken).WithTags(SwaggerTags.FinancialInsightTag).RequireAuthorization();
 
         // Specific analysis endpoints
-        app.MapGet(ApiEndpoints.Insights.SpendingPatterns, AnalyzeSpendingPatterns).RequireAuthorization();
-        app.MapGet(ApiEndpoints.Insights.SavingsOpportunities, GenerateSavingsOpportunities).RequireAuthorization();
-        app.MapGet(ApiEndpoints.Insights.BudgetPerformance, AnalyzeBudgetPerformance).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Insights.SpendingPatterns, AnalyzeSpendingPatterns).WithTags(SwaggerTags.FinancialInsightTag).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Insights.SavingsOpportunities, GenerateSavingsOpportunities).WithTags(SwaggerTags.FinancialInsightTag).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Insights.BudgetPerformance, AnalyzeBudgetPerformance).WithTags(SwaggerTags.FinancialInsightTag).RequireAuthorization();
     }
 
     public void DefineServices(IServiceCollection services)
@@ -146,4 +152,3 @@ public class FinancialInsightsEndpointDefinitions : IEndpointDefinition
         return insight != null ? Results.Ok(insight) : Results.NotFound();
     }
 }
- 

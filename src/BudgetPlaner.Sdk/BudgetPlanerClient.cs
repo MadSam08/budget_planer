@@ -18,23 +18,32 @@ public class BudgetPlanerClient : IBudgetPlanerClient
     public IAuthApi Auth { get; }
 
     /// <summary>
-    /// Initializes a new instance of the BudgetPlanerClient
+    /// Initializes a new instance of the BudgetPlanerClient with individual API interfaces
+    /// This constructor is used when API interfaces are registered with DI/Refit
     /// </summary>
-    /// <param name="httpClient">HttpClient configured with base address and authentication</param>
-    public BudgetPlanerClient(HttpClient httpClient)
+    public BudgetPlanerClient(
+        ICategoriesApi categories,
+        IIncomesApi incomes,
+        IExpensesApi expenses,
+        ILoansApi loans,
+        IBudgetsApi budgets,
+        IInsightsApi insights,
+        ICurrenciesApi currencies,
+        IAuthApi auth)
     {
-        Categories = RestService.For<ICategoriesApi>(httpClient);
-        Incomes = RestService.For<IIncomesApi>(httpClient);
-        Expenses = RestService.For<IExpensesApi>(httpClient);
-        Loans = RestService.For<ILoansApi>(httpClient);
-        Budgets = RestService.For<IBudgetsApi>(httpClient);
-        Insights = RestService.For<IInsightsApi>(httpClient);
-        Currencies = RestService.For<ICurrenciesApi>(httpClient);
-        Auth = RestService.For<IAuthApi>(httpClient);
+        Categories = categories;
+        Incomes = incomes;
+        Expenses = expenses;
+        Loans = loans;
+        Budgets = budgets;
+        Insights = insights;
+        Currencies = currencies;
+        Auth = auth;
     }
 
     /// <summary>
     /// Creates a new BudgetPlanerClient with the specified base URL
+    /// This factory method creates its own HttpClient and Refit instances
     /// </summary>
     /// <param name="baseUrl">The base URL of the Budget Planer API</param>
     /// <param name="accessToken">Optional access token for authentication</param>
@@ -49,6 +58,16 @@ public class BudgetPlanerClient : IBudgetPlanerClient
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
         }
 
-        return new BudgetPlanerClient(httpClient);
+        // Create API instances using Refit
+        var categories = RestService.For<ICategoriesApi>(httpClient);
+        var incomes = RestService.For<IIncomesApi>(httpClient);
+        var expenses = RestService.For<IExpensesApi>(httpClient);
+        var loans = RestService.For<ILoansApi>(httpClient);
+        var budgets = RestService.For<IBudgetsApi>(httpClient);
+        var insights = RestService.For<IInsightsApi>(httpClient);
+        var currencies = RestService.For<ICurrenciesApi>(httpClient);
+        var auth = RestService.For<IAuthApi>(httpClient);
+
+        return new BudgetPlanerClient(categories, incomes, expenses, loans, budgets, insights, currencies, auth);
     }
 } 

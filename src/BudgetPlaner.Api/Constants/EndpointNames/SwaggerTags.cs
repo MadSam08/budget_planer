@@ -8,4 +8,7 @@ public static class SwaggerTags
     public const string LoanTag = "Loan";
     public const string IncomeTag = "Income";
     public const string SpendingTag = "Spending";
+    public const string FinancialInsightTag = "FinancialInsight";
+    public const string ExternalAuthTag = "ExternalAuth";
+    public const string BudgetTag = "Budget";
 } 

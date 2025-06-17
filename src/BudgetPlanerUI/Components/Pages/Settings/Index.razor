@@ -4,7 +4,6 @@
 @using BudgetPlaner.UI.ApiClients
 @rendermode InteractiveServer
 @attribute [Authorize]
-@inject IUserProfileService UserProfileService
 @inject ISnackbar Snackbar
 
 <PageTitle>Settings - Budget Planner</PageTitle>
@@ -51,50 +50,50 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            var result = await UserProfileService.GetProfileAsync();
-            profile = result ?? new UserProfileModel();
-        }
-        catch
-        {
-            Snackbar.Add("Failed to load profile", Severity.Error);
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        // try
+        // {
+        //     var result = await UserProfileService.GetProfileAsync();
+        //     profile = result ?? new UserProfileModel();
+        // }
+        // catch
+        // {
+        //     Snackbar.Add("Failed to load profile", Severity.Error);
+        // }
+        // finally
+        // {
+        //     isLoading = false;
+        // }
     }
 
     private async Task UpdateProfileAsync()
     {
-        if (isSubmitting)
-        {
-            return;
-        }
-
-        isSubmitting = true;
-        StateHasChanged();
-
-        try
-        {
-            var success = await UserProfileService.UpdateProfileAsync(profile);
-            if (success)
-            {
-                Snackbar.Add("Profile updated", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add("Failed to update profile", Severity.Error);
-            }
-        }
-        catch
-        {
-            Snackbar.Add("Failed to update profile", Severity.Error);
-        }
-        finally
-        {
-            isSubmitting = false;
-        }
+        // if (isSubmitting)
+        // {
+        //     return;
+        // }
+        //
+        // isSubmitting = true;
+        // StateHasChanged();
+        //
+        // try
+        // {
+        //     var success = await UserProfileService.UpdateProfileAsync(profile);
+        //     if (success)
+        //     {
+        //         Snackbar.Add("Profile updated", Severity.Success);
+        //     }
+        //     else
+        //     {
+        //         Snackbar.Add("Failed to update profile", Severity.Error);
+        //     }
+        // }
+        // catch
+        // {
+        //     Snackbar.Add("Failed to update profile", Severity.Error);
+        // }
+        // finally
+        // {
+        //     isSubmitting = false;
+        // }
     }
 }

@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0" />
     <ProjectReference Include="..\BudgetPlaner.Contracts\BudgetPlaner.Contracts.csproj" />
+    <ProjectReference Include="..\BudgetPlaner.Sdk\BudgetPlaner.Sdk.csproj" />
   </ItemGroup>
 
   <ItemGroup>

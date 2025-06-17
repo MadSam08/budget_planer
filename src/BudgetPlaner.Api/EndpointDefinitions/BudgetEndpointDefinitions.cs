@@ -13,20 +13,26 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
     public void DefineEndpoints(WebApplication app)
     {
         // Budget CRUD operations
-        app.MapGet(ApiEndpoints.Budgets.GetAll, GetUserBudgets).RequireAuthorization();
-        app.MapGet(ApiEndpoints.Budgets.Get, GetBudgetById).RequireAuthorization();
-        app.MapPost(ApiEndpoints.Budgets.Create, CreateBudget).RequireAuthorization();
-        app.MapPut(ApiEndpoints.Budgets.Update, UpdateBudget).RequireAuthorization();
-        app.MapDelete(ApiEndpoints.Budgets.Delete, DeleteBudget).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Budgets.GetAll, GetUserBudgets)
+            .WithTags(SwaggerTags.BudgetTag).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Budgets.Get, GetBudgetById).WithTags(SwaggerTags.BudgetTag).RequireAuthorization();
+        app.MapPost(ApiEndpoints.Budgets.Create, CreateBudget).WithTags(SwaggerTags.BudgetTag).RequireAuthorization();
+        app.MapPut(ApiEndpoints.Budgets.Update, UpdateBudget).WithTags(SwaggerTags.BudgetTag).RequireAuthorization();
+        app.MapDelete(ApiEndpoints.Budgets.Delete, DeleteBudget).WithTags(SwaggerTags.BudgetTag).RequireAuthorization();
 
         // Budget category operations
-        app.MapPost(ApiEndpoints.Budgets.AddCategory, AddCategoryToBudget).RequireAuthorization();
-        app.MapPut(ApiEndpoints.Budgets.UpdateCategory, UpdateBudgetCategory).RequireAuthorization();
-        app.MapDelete(ApiEndpoints.Budgets.RemoveCategory, RemoveCategoryFromBudget).RequireAuthorization();
+        app.MapPost(ApiEndpoints.Budgets.AddCategory, AddCategoryToBudget).WithTags(SwaggerTags.BudgetTag)
+            .RequireAuthorization();
+        app.MapPut(ApiEndpoints.Budgets.UpdateCategory, UpdateBudgetCategory).WithTags(SwaggerTags.BudgetTag)
+            .RequireAuthorization();
+        app.MapDelete(ApiEndpoints.Budgets.RemoveCategory, RemoveCategoryFromBudget).WithTags(SwaggerTags.BudgetTag)
+            .RequireAuthorization();
 
         // Budget analysis
-        app.MapGet(ApiEndpoints.Budgets.GetUtilization, GetBudgetUtilization).RequireAuthorization();
-        app.MapGet(ApiEndpoints.Budgets.GetOverBudget, GetOverBudgetCategories).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Budgets.GetUtilization, GetBudgetUtilization).WithTags(SwaggerTags.BudgetTag)
+            .RequireAuthorization();
+        app.MapGet(ApiEndpoints.Budgets.GetOverBudget, GetOverBudgetCategories).WithTags(SwaggerTags.BudgetTag)
+            .RequireAuthorization();
     }
 
     public void DefineServices(IServiceCollection services)
@@ -161,4 +167,5 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
 }
 
 public record AddCategoryToBudgetRequest(int CategoryId, decimal AllocatedAmount);
+
 public record UpdateBudgetCategoryRequest(decimal AllocatedAmount);

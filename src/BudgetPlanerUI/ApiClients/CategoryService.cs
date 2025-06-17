@@ -1,50 +1,40 @@
 using BudgetPlaner.Contracts.Api.Category;
 using BudgetPlaner.UI.Services;
-using System.Text.Json;
-using Microsoft.AspNetCore.Http.Features;
-using System.Text;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BudgetPlaner.UI.ApiClients;
 
+/// <summary>
+/// Adapter service that implements ICategoryService using the SDK.
+/// This service requires AuthenticationStateProvider to be passed from components.
+/// </summary>
 public class CategoryService : ICategoryService
 {
-    private readonly HttpClient _httpClient;
-    private readonly ITokenRefreshService _tokenRefreshService;
+    private readonly IBudgetPlanerSdkService _sdkService;
     private readonly ILogger<CategoryService> _logger;
 
-    public CategoryService(HttpClient httpClient, ITokenRefreshService tokenRefreshService, ILogger<CategoryService> logger)
+    public CategoryService(IBudgetPlanerSdkService sdkService, ILogger<CategoryService> logger)
     {
-        _httpClient = httpClient;
-        _tokenRefreshService = tokenRefreshService;
+        _sdkService = sdkService;
         _logger = logger;
     }
 
-    public async Task<List<CategoryRequest>> GetCategoriesAsync(CancellationToken cancellationToken = default)
+    public async Task<List<CategoryRequest>> GetCategoriesAsync(AuthenticationStateProvider authStateProvider, CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogDebug("Getting categories via direct API call to /budget-planer/category");
+            _logger.LogDebug("Getting categories via SDK");
+            var categories = await _sdkService.Categories.GetCategoriesAsync();
             
-            var response = await SendRequestWithRetryAsync(() => 
-                _httpClient.GetAsync("/budget-planer/category", cancellationToken));
-            
-            _logger.LogDebug("Request URL: {RequestUri}", response.RequestMessage?.RequestUri);
-            _logger.LogDebug("Response Status: {StatusCode}", response.StatusCode);
-            
-            if (response.IsSuccessStatusCode)
+            var result = categories.Select(c => new CategoryRequest
             {
-                var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                var categories = JsonSerializer.Deserialize<CategoryRequest[]>(responseContent, new JsonSerializerOptions 
-                { 
-                    PropertyNameCaseInsensitive = true 
-                }) ?? Array.Empty<CategoryRequest>();
-                
-                _logger.LogDebug("Retrieved {Count} categories", categories.Length);
-                return categories.ToList();
-            }
+                Id = c.Id,
+                Name = c.Name,
+                CategoryTypes = c.CategoryTypes
+            }).ToList();
             
-            _logger.LogWarning("Failed to get categories: {StatusCode}", response.StatusCode);
-            return new List<CategoryRequest>();
+            _logger.LogDebug("Retrieved {Count} categories", result.Count);
+            return result;
         }
         catch (Exception ex)
         {
@@ -53,28 +43,29 @@ public class CategoryService : ICategoryService
         }
     }
 
-    public async Task<CategoryRequest?> GetCategoryAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<CategoryRequest?> GetCategoryAsync(AuthenticationStateProvider authStateProvider, string id, CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogDebug("Getting category {Id} via direct API", id);
-            var response = await SendRequestWithRetryAsync(() => 
-                _httpClient.GetAsync($"/budget-planer/category/{id}", cancellationToken));
+            _logger.LogDebug("Getting category {Id} via SDK", id);
+            var category = await _sdkService.Categories.GetCategoryAsync(id);
             
-            if (response.IsSuccessStatusCode)
+            if (category == null)
             {
-                var json = await response.Content.ReadAsStringAsync(cancellationToken);
-                var category = JsonSerializer.Deserialize<CategoryRequest>(json, new JsonSerializerOptions 
-                { 
-                    PropertyNameCaseInsensitive = true 
-                });
-                
-                _logger.LogDebug("Retrieved category {Id}", id);
-                return category;
+                _logger.LogWarning("Category {Id} not found", id);
+                return null;
             }
+
+            // Convert CategoryModel to CategoryRequest for backward compatibility
+            var result = new CategoryRequest
+            {
+                Id = category.Id,
+                Name = category.Name,
+                CategoryTypes = category.CategoryTypes
+            };
             
-            _logger.LogWarning("Failed to get category {Id}: {StatusCode}", id, response.StatusCode);
-            return null;
+            _logger.LogDebug("Retrieved category {Id}", id);
+            return result;
         }
         catch (Exception ex)
         {
@@ -83,17 +74,15 @@ public class CategoryService : ICategoryService
         }
     }
 
-    public async Task<bool> CreateCategoryAsync(CategoryRequest category, CancellationToken cancellationToken = default)
+    public async Task<bool> CreateCategoryAsync(AuthenticationStateProvider authStateProvider, CategoryRequest category, CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogDebug("Creating category via direct API");
-            var response = await SendRequestWithRetryAsync(() => 
-                _httpClient.PostAsJsonAsync("/budget-planer/category", category, cancellationToken));
+            _logger.LogDebug("Creating category via SDK");
+            await _sdkService.Categories.CreateCategoryAsync(category);
             
-            var success = response.IsSuccessStatusCode;
-            _logger.LogDebug("Category creation {Result}", success ? "succeeded" : "failed");
-            return success;
+            _logger.LogDebug("Category creation succeeded");
+            return true;
         }
         catch (Exception ex)
         {
@@ -102,17 +91,15 @@ public class CategoryService : ICategoryService
         }
     }
 
-    public async Task<bool> UpdateCategoryAsync(string id, CategoryRequest category, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateCategoryAsync(AuthenticationStateProvider authStateProvider, string id, CategoryRequest category, CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogDebug("Updating category {Id} via direct API", id);
-            var response = await SendRequestWithRetryAsync(() => 
-                _httpClient.PutAsJsonAsync($"/budget-planer/category/{id}", category, cancellationToken));
+            _logger.LogDebug("Updating category {Id} via SDK", id);
+            await _sdkService.Categories.UpdateCategoryAsync(id, category);
             
-            var success = response.IsSuccessStatusCode;
-            _logger.LogDebug("Category {Id} update {Result}", id, success ? "succeeded" : "failed");
-            return success;
+            _logger.LogDebug("Category {Id} update succeeded", id);
+            return true;
         }
         catch (Exception ex)
         {
@@ -121,17 +108,15 @@ public class CategoryService : ICategoryService
         }
     }
 
-    public async Task<bool> DeleteCategoryAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<bool> DeleteCategoryAsync(AuthenticationStateProvider authStateProvider, string id, CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogDebug("Deleting category {Id} via direct API", id);
-            var response = await SendRequestWithRetryAsync(() => 
-                _httpClient.DeleteAsync($"/budget-planer/category/{id}", cancellationToken));
+            _logger.LogDebug("Deleting category {Id} via SDK", id);
+            await _sdkService.Categories.DeleteCategoryAsync(id);
             
-            var success = response.IsSuccessStatusCode;
-            _logger.LogDebug("Category {Id} deletion {Result}", id, success ? "succeeded" : "failed");
-            return success;
+            _logger.LogDebug("Category {Id} deletion succeeded", id);
+            return true;
         }
         catch (Exception ex)
         {
@@ -140,38 +125,20 @@ public class CategoryService : ICategoryService
         }
     }
 
-    public async Task<bool> RestoreCategoryAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<bool> RestoreCategoryAsync(AuthenticationStateProvider authStateProvider, string id, CancellationToken cancellationToken = default)
     {
         try
         {
-            _logger.LogDebug("Restoring category {Id} via direct API", id);
-            var response = await SendRequestWithRetryAsync(() => 
-                _httpClient.PatchAsync($"/budget-planer/category/{id}/restore", null, cancellationToken));
+            _logger.LogDebug("Restoring category {Id} via SDK", id);
+            await _sdkService.Categories.RestoreCategoryAsync(id);
             
-            var success = response.IsSuccessStatusCode;
-            _logger.LogDebug("Category {Id} restoration {Result}", id, success ? "succeeded" : "failed");
-            return success;
+            _logger.LogDebug("Category {Id} restoration succeeded", id);
+            return true;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error restoring category {Id}", id);
             return false;
         }
-    }
-
-    private async Task<HttpResponseMessage> SendRequestWithRetryAsync(Func<Task<HttpResponseMessage>> requestFunc)
-    {
-        var response = await requestFunc();
-        
-        // Handle 401 by refreshing token and retrying once
-        if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-        {
-            if (await _tokenRefreshService.RefreshTokenAsync())
-            {
-                response = await requestFunc();
-            }
-        }
-        
-        return response;
     }
 } 

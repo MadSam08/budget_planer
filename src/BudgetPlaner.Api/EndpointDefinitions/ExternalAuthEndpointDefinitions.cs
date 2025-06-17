@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using BudgetPlaner.Api.Bootstrap;
 using BudgetPlaner.Api.Constants;
+using BudgetPlaner.Api.Constants.EndpointNames;
 using BudgetPlaner.Infrastructure.DatabaseContext;
 using BudgetPlaner.Infrastructure.UnitOfWork;
 using BudgetPlaner.Domain;
@@ -16,8 +17,8 @@ public class ExternalAuthEndpointDefinitions : IEndpointDefinition
     public void DefineEndpoints(WebApplication app)
     {
         var group = app.MapGroup(BasePath);
-        group.MapGet("/external/{provider}", ChallengeProvider);
-        group.MapGet("/external/{provider}/callback", HandleCallback);
+        group.MapGet("/external/{provider}", ChallengeProvider).WithTags(SwaggerTags.ExternalAuthTag);
+        group.MapGet("/external/{provider}/callback", HandleCallback).WithTags(SwaggerTags.ExternalAuthTag);
     }
 
     public void DefineServices(IServiceCollection services)

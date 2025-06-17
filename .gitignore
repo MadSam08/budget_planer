@@ -24,3 +24,4 @@ src/BudgetPlaner.Infrastructure/bin/
 BudgetPlaner.Contracts/obj/
 src/BudgetPlaner.Sdk/obj/
 BudgetPlaner.Sdk/obj/
+src/BudgetPlaner.Sdk/bin/

@@ -6,7 +6,7 @@ namespace BudgetPlaner.Sdk.Constants;
 /// </summary>
 public static class ApiEndpoints
 {
-    private const string ApiBase = "api";
+    private const string ApiBase = "/api";
 
     public static class Categories
     {

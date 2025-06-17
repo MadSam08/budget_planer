@@ -11,7 +11,7 @@ public interface ICategoriesApi
     Task<IEnumerable<CategoryModel>> GetCategoriesAsync();
 
     [Get(ApiEndpoints.Categories.Get)]
-    Task<CategoryModel> GetCategoryAsync(string id);
+    Task<CategoryModel?> GetCategoryAsync(string id);
 
     [Post(ApiEndpoints.Categories.Create)]
     Task<CategoryModel> CreateCategoryAsync([Body] CategoryRequest request);

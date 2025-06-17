@@ -1,6 +1,7 @@
 @using BudgetPlaner.Contracts.Api.Category
-@using BudgetPlaner.UI.ApiClients
+@using BudgetPlaner.UI.Services
 @using CategoryTypes = BudgetPlaner.Contracts.Api.Category.CategoryTypes
+@inherits OwningComponentBase
 
 <MudDialog @ref="MudDialog">
     <DialogContent>
@@ -58,16 +59,20 @@
 @code {
     [Parameter] public CategoryRequest? Category { get; set; }
     [Parameter] public bool IsEdit { get; set; }
-    [Inject] private ICategoryService CategoryService { get; set; } = null!;
     [Inject] private ISnackbar Snackbar { get; set; } = null!;
+    [Inject] private ILogger<CategoryDialog> Logger { get; set; } = null!;
 
     private MudDialog? MudDialog { get; set; }
+    private IBudgetPlanerSdkService? _sdkService;
 
     private CategoryRequest _category = new() { Id = "", Name = "", CategoryTypes = CategoryTypes.Default };
     private bool _isSubmitting = false;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        // Get the SDK service using OwningComponentBase.ScopedServices
+        _sdkService = ScopedServices.GetRequiredService<IBudgetPlanerSdkService>();
+
         if (Category != null && IsEdit)
         {
             _category = new CategoryRequest
@@ -76,6 +81,11 @@
                 Name = Category.Name,
                 CategoryTypes = Category.CategoryTypes
             };
+        }
+        else if (!IsEdit)
+        {
+            // Generate new ID for create operation
+            _category.Id = Guid.NewGuid().ToString();
         }
     }
 
@@ -90,40 +100,43 @@
         _isSubmitting = true;
         StateHasChanged();
 
-        bool success;
-        if (IsEdit)
+        try
         {
-            success = await CategoryService.UpdateCategoryAsync(_category.Id, _category);
-            if (success)
+            // Use the SDK service directly - authentication is handled automatically by Refit
+            bool success;
+            if (IsEdit)
             {
+                await _sdkService!.Categories.UpdateCategoryAsync(_category.Id, _category);
+                success = true;
                 Snackbar.Add("Category updated successfully", Severity.Success);
+                Logger.LogInformation("Category updated successfully: {CategoryId}", _category.Id);
             }
             else
             {
-                Snackbar.Add("Failed to update category", Severity.Error);
+                await _sdkService!.Categories.CreateCategoryAsync(_category);
+                success = true;
+                Snackbar.Add("Category created successfully", Severity.Success);
+                Logger.LogInformation("Category created successfully: {CategoryName}", _category.Name);
             }
-        }
-        else
-        {
-            success = await CategoryService.CreateCategoryAsync(_category);
+
             if (success)
             {
-                Snackbar.Add("Category created successfully", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add("Failed to create category", Severity.Error);
+                await MudDialog?.CloseAsync(DialogResult.Ok(true));
             }
         }
-
-        _isSubmitting = false;
-
-        if (success)
+        catch (UnauthorizedAccessException)
         {
-            await MudDialog?.CloseAsync(DialogResult.Ok(true));
+            Logger.LogWarning("User is not authenticated");
+            Snackbar.Add("Authentication required. Please log in.", Severity.Warning);
         }
-        else
+        catch (Exception ex)
         {
+            Logger.LogError(ex, "Error {Action} category", IsEdit ? "updating" : "creating");
+            Snackbar.Add($"Failed to {(IsEdit ? "update" : "create")} category", Severity.Error);
+        }
+        finally
+        {
+            _isSubmitting = false;
             StateHasChanged();
         }
     }

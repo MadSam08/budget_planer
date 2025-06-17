@@ -5,11 +5,14 @@ using BudgetPlaner.UI.Authentication;
 using BudgetPlaner.UI.Services;
 using BudgetPlaner.UI.Infrastructure;
 using BudgetPlaner.Contracts.Claims;
+using BudgetPlaner.Sdk;
+using BudgetPlaner.Sdk.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using MudBlazor.Services;
+using Refit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,22 +32,57 @@ builder.Services.AddHttpClient<IIdentityService, IdentityService>(client =>
     client.BaseAddress = new Uri(builder.Configuration["BaseUrl"]!);
 });
 
-builder.Services.AddHttpClient<ICategoryService, CategoryService>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["BaseUrl"]!);
-    client.Timeout = TimeSpan.FromSeconds(30);
-})
-.AddHttpMessageHandler<AuthTokenHandler>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
+// Register the AuthTokenHandler for authentication
 builder.Services.AddTransient<AuthTokenHandler>();
 
-builder.Services.AddHttpClient<ITokenRefreshService, TokenRefreshService>(client =>
-{
-    client.BaseAddress = new Uri("http://localhost:5271"); 
-    client.Timeout = TimeSpan.FromSeconds(30);
-});
+// Register individual Refit API interfaces with the DelegatingHandler
+builder.Services
+    .AddRefitClient<ICategoriesApi>()
+    .ConfigureHttpClient(x => x.BaseAddress = new Uri(builder.Configuration["BaseUrl"]!))
+    .AddHttpMessageHandler<AuthTokenHandler>();
 
+builder.Services
+    .AddRefitClient<IIncomesApi>()
+    .ConfigureHttpClient(x => x.BaseAddress = new Uri(builder.Configuration["BaseUrl"]!))
+    .AddHttpMessageHandler<AuthTokenHandler>();
 
+builder.Services
+    .AddRefitClient<IExpensesApi>()
+    .ConfigureHttpClient(x => x.BaseAddress = new Uri(builder.Configuration["BaseUrl"]!))
+    .AddHttpMessageHandler<AuthTokenHandler>();
+
+builder.Services
+    .AddRefitClient<ILoansApi>()
+    .ConfigureHttpClient(x => x.BaseAddress = new Uri(builder.Configuration["BaseUrl"]!))
+    .AddHttpMessageHandler<AuthTokenHandler>();
+
+builder.Services
+    .AddRefitClient<IBudgetsApi>()
+    .ConfigureHttpClient(x => x.BaseAddress = new Uri(builder.Configuration["BaseUrl"]!))
+    .AddHttpMessageHandler<AuthTokenHandler>();
+
+builder.Services
+    .AddRefitClient<IInsightsApi>()
+    .ConfigureHttpClient(x => x.BaseAddress = new Uri(builder.Configuration["BaseUrl"]!))
+    .AddHttpMessageHandler<AuthTokenHandler>();
+
+builder.Services
+    .AddRefitClient<ICurrenciesApi>()
+    .ConfigureHttpClient(x => x.BaseAddress = new Uri(builder.Configuration["BaseUrl"]!))
+    .AddHttpMessageHandler<AuthTokenHandler>();
+
+builder.Services
+    .AddRefitClient<IAuthApi>()
+    .ConfigureHttpClient(x => x.BaseAddress = new Uri(builder.Configuration["BaseUrl"]!))
+    .AddHttpMessageHandler<AuthTokenHandler>();
+
+// Register the composite client
+builder.Services.AddScoped<IBudgetPlanerClient, BudgetPlanerClient>();
+
+// Register the SDK service wrapper
+builder.Services.AddScoped<IBudgetPlanerSdkService, BudgetPlanerSdkService>();
 builder.Services.AddScoped<AuthenticationStateProvider, UserRevalidatingState>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
