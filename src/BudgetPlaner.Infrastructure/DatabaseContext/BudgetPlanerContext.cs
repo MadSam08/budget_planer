@@ -91,7 +91,11 @@ public class BudgetPlanerContext : DbContext
         modelBuilder.Entity<FinancialInsightEntity>().HasOne(x => x.Category)
             .WithMany()
             .HasForeignKey(x => x.CategoryId);
-            
+
+        // User profile
+        modelBuilder.Entity<UserProfileEntity>().HasKey(x => x.Id);
+        modelBuilder.Entity<UserProfileEntity>().ToTable(TableNames.UserProfile);
+
         // Loan payments
         modelBuilder.Entity<LoanPaymentEntity>().HasKey(x => x.Id);
         modelBuilder.Entity<LoanPaymentEntity>().ToTable(TableNames.LoanPayment);

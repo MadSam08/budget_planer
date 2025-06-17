@@ -14,4 +14,5 @@ public static class TableNames
     public const string SavingsGoal = "SavingsGoal";
     public const string SavingsContribution = "SavingsContribution";
     public const string FinancialInsight = "FinancialInsight";
+    public const string UserProfile = "UserProfile";
 }
