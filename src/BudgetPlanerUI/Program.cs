@@ -36,6 +36,7 @@ builder.Services.AddTransient<AuthenticatedHttpMessageHandler>();
 
 // Register authenticated services
 builder.Services.AddAuthenticatedHttpClient<ICategoryService, CategoryService>(builder.Configuration);
+builder.Services.AddAuthenticatedHttpClient<IUserProfileService, UserProfileService>(builder.Configuration);
 
 // Register custom authentication state provider
 builder.Services.AddScoped<AuthenticationStateProvider, UserRevalidatingState>();

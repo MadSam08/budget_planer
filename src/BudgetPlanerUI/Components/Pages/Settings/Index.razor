@@ -1,131 +1,101 @@
-@* @page "/settings" *@
-@* @using Microsoft.AspNetCore.Authorization *@
-@* @attribute [Authorize] *@
-@* *@
-@* <PageTitle>Settings - Budget Planner</PageTitle> *@
-@* *@
-@* <MudText Typo="Typo.h4" GutterBottom="true">Settings</MudText> *@
-@* <MudText Typo="Typo.body1" Class="mb-6">Manage your account settings and preferences.</MudText> *@
-@* *@
-@* <MudGrid> *@
-@*     <MudItem xs="12" md="8"> *@
-@*         <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6"> *@
-@*             <MudTabPanel Text="Profile" Icon="Icons.Material.Filled.Person"> *@
-@*                 <MudCard Elevation="0"> *@
-@*                     <MudCardContent> *@
-@*                         <MudTextField T="string" Label="Full Name" Value="JohnDoe" Variant="Variant.Outlined" Class="mb-4" /> *@
-@*                         <MudTextField T="string" Label="Email" Value="john.doe@example.com" Variant="Variant.Outlined" Class="mb-4" /> *@
-@*                         <MudTextField T="string" Label="Phone" Value="+1 (555) 123-4567" Variant="Variant.Outlined" Class="mb-4" /> *@
-@*                         <MudButton Variant="Variant.Filled" Color="Color.Primary">Update Profile</MudButton> *@
-@*                     </MudCardContent> *@
-@*                 </MudCard> *@
-@*             </MudTabPanel> *@
-@*              *@
-@*             <MudTabPanel Text="Preferences" Icon="Icons.Material.Filled.Tune"> *@
-@*                 <MudCard Elevation="0"> *@
-@*                     <MudCardContent> *@
-@*                         <MudSelect T="string" Label="Default Currency" Variant="Variant.Outlined" Value="USD" Class="mb-4"> *@
-@*                             <MudSelectItem Value="USD">USD - US Dollar</MudSelectItem> *@
-@*                             <MudSelectItem Value="EUR">EUR - Euro</MudSelectItem> *@
-@*                             <MudSelectItem Value="GBP">GBP - British Pound</MudSelectItem> *@
-@*                         </MudSelect> *@
-@*                          *@
-@*                         <MudSelect T="string" Label="Date Format" Variant="Variant.Outlined" Value="MM/DD/YYYY" Class="mb-4"> *@
-@*                             <MudSelectItem Value="MM/DD/YYYY">MM/DD/YYYY</MudSelectItem> *@
-@*                             <MudSelectItem Value="DD/MM/YYYY">DD/MM/YYYY</MudSelectItem> *@
-@*                             <MudSelectItem Value="YYYY-MM-DD">YYYY-MM-DD</MudSelectItem> *@
-@*                         </MudSelect> *@
-@*                          *@
-@*                         <MudSelect T="string" Label="Theme" Variant="Variant.Outlined" Value="Light" Class="mb-4"> *@
-@*                             <MudSelectItem Value="Light">Light</MudSelectItem> *@
-@*                             <MudSelectItem Value="Dark">Dark</MudSelectItem> *@
-@*                             <MudSelectItem Value="Auto">Auto</MudSelectItem> *@
-@*                         </MudSelect> *@
-@*                          *@
-@*                         <MudButton Variant="Variant.Filled" Color="Color.Primary">Save Preferences</MudButton> *@
-@*                     </MudCardContent> *@
-@*                 </MudCard> *@
-@*             </MudTabPanel> *@
-@*              *@
-@*             <MudTabPanel Text="Notifications" Icon="Icons.Material.Filled.Notifications"> *@
-@*                 <MudCard Elevation="0"> *@
-@*                     <MudCardContent> *@
-@*                         <MudStack Spacing="3"> *@
-@*                             <MudSwitch T="bool" Value="true" Label="Email Notifications" Color="Color.Primary" /> *@
-@*                             <MudSwitch T="bool" Value="false" Label="SMS Notifications" Color="Color.Primary" /> *@
-@*                             <MudSwitch T="bool" Value="true" Label="Budget Alerts" Color="Color.Primary" /> *@
-@*                             <MudSwitch T="bool" Value="true" Label="Monthly Reports" Color="Color.Primary" /> *@
-@*                             <MudSwitch T="bool" Value="false" Label="Marketing Emails" Color="Color.Primary" /> *@
-@*                         </MudStack> *@
-@*                         <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4"> *@
-@*                             Update Notifications *@
-@*                         </MudButton> *@
-@*                     </MudCardContent> *@
-@*                 </MudCard> *@
-@*             </MudTabPanel> *@
-@*              *@
-@*             <MudTabPanel Text="Security" Icon="Icons.Material.Filled.Security"> *@
-@*                 <MudCard Elevation="0"> *@
-@*                     <MudCardContent> *@
-@*                         <MudTextField T="string" Label="Current Password" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-4" /> *@
-@*                         <MudTextField T="string" Label="New Password" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-4" /> *@
-@*                         <MudTextField T="string" Label="Confirm New Password" InputType="InputType.Password" Variant="Variant.Outlined" Class="mb-4" /> *@
-@*                          *@
-@*                         <MudDivider Class="my-4" /> *@
-@*                          *@
-@*                         <MudSwitch T="bool" Value="false" Label="Enable Two-Factor Authentication" Color="Color.Primary" Class="mb-3" /> *@
-@*                          *@
-@*                         <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mr-2"> *@
-@*                             Change Password *@
-@*                         </MudButton> *@
-@*                         <MudButton Variant="Variant.Outlined" Color="Color.Secondary"> *@
-@*                             Setup 2FA *@
-@*                         </MudButton> *@
-@*                     </MudCardContent> *@
-@*                 </MudCard> *@
-@*             </MudTabPanel> *@
-@*         </MudTabs> *@
-@*     </MudItem> *@
-@*      *@
-@*     <MudItem xs="12" md="4"> *@
-@*         <MudCard> *@
-@*             <MudCardHeader> *@
-@*                 <CardHeaderContent> *@
-@*                     <MudText Typo="Typo.h6">Quick Actions</MudText> *@
-@*                 </CardHeaderContent> *@
-@*             </MudCardHeader> *@
-@*             <MudCardContent> *@
-@*                 <MudStack Spacing="2"> *@
-@*                     <MudButton Variant="Variant.Outlined"  *@
-@*                                Color="Color.Info"  *@
-@*                                FullWidth="true" *@
-@*                                StartIcon="Icons.Material.Filled.Download"> *@
-@*                         Export Data *@
-@*                     </MudButton> *@
-@*                     <MudButton Variant="Variant.Outlined"  *@
-@*                                Color="Color.Warning"  *@
-@*                                FullWidth="true" *@
-@*                                StartIcon="Icons.Material.Filled.Backup"> *@
-@*                         Backup Settings *@
-@*                     </MudButton> *@
-@*                     <MudButton Variant="Variant.Outlined"  *@
-@*                                Color="Color.Error"  *@
-@*                                FullWidth="true" *@
-@*                                StartIcon="Icons.Material.Filled.Delete"> *@
-@*                         Delete Account *@
-@*                     </MudButton> *@
-@*                 </MudStack> *@
-@*             </MudCardContent> *@
-@*         </MudCard> *@
-@*          *@
-@*         <MudPaper Class="pa-4 mt-4"> *@
-@*             <MudText Typo="Typo.h6" GutterBottom="true">Account Info</MudText> *@
-@*             <MudList T="string" Dense="true"> *@
-@*                 <MudListItem Text="Account Type: Premium" /> *@
-@*                 <MudListItem Text="Member Since: Jan 2024" /> *@
-@*                 <MudListItem Text="Last Login: Today" /> *@
-@*                 <MudListItem Text="Data Usage: 2.3 MB" /> *@
-@*             </MudList> *@
-@*         </MudPaper> *@
-@*     </MudItem> *@
-@* </MudGrid>  *@
+@page "/settings"
+@using Microsoft.AspNetCore.Authorization
+@using BudgetPlaner.Contracts.Api.Profile
+@using BudgetPlaner.UI.ApiClients
+@rendermode InteractiveServer
+@attribute [Authorize]
+@inject IUserProfileService UserProfileService
+@inject ISnackbar Snackbar
+
+<PageTitle>Settings - Budget Planner</PageTitle>
+
+<MudText Typo="Typo.h4" GutterBottom="true">Settings</MudText>
+<MudText Typo="Typo.body1" Class="mb-6">Manage your profile settings.</MudText>
+
+@if (isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <EditForm Model="profile" OnValidSubmit="UpdateProfileAsync">
+        <DataAnnotationsValidator />
+        <MudPaper Class="pa-6" Elevation="2">
+            <MudTextField @bind-Value="profile.FullName" Label="Full Name" Variant="Variant.Outlined" Class="mb-4" />
+            <ValidationMessage For="@(() => profile.FullName)" />
+
+            <MudTextField @bind-Value="profile.PreferredCurrency" Label="Preferred Currency" Variant="Variant.Outlined" Class="mb-4" />
+            <ValidationMessage For="@(() => profile.PreferredCurrency)" />
+
+            <MudTextField T="decimal" @bind-Value="profile.MonthlySavingsGoal" Label="Monthly Savings Goal" Variant="Variant.Outlined" Class="mb-4" />
+            <ValidationMessage For="@(() => profile.MonthlySavingsGoal)" />
+
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Disabled="@isSubmitting">
+                @if (isSubmitting)
+                {
+                    <MudProgressCircular Indeterminate="true" Size="Size.Small" Class="me-2" />
+                    Updating...
+                }
+                else
+                {
+                    Save Changes
+                }
+            </MudButton>
+        </MudPaper>
+    </EditForm>
+}
+
+@code {
+    private UserProfileModel profile = new();
+    private bool isLoading = true;
+    private bool isSubmitting;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await UserProfileService.GetProfileAsync();
+            profile = result ?? new UserProfileModel();
+        }
+        catch
+        {
+            Snackbar.Add("Failed to load profile", Severity.Error);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task UpdateProfileAsync()
+    {
+        if (isSubmitting)
+        {
+            return;
+        }
+
+        isSubmitting = true;
+        StateHasChanged();
+
+        try
+        {
+            var success = await UserProfileService.UpdateProfileAsync(profile);
+            if (success)
+            {
+                Snackbar.Add("Profile updated", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Failed to update profile", Severity.Error);
+            }
+        }
+        catch
+        {
+            Snackbar.Add("Failed to update profile", Severity.Error);
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+}
