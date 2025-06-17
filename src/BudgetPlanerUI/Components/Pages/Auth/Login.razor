@@ -100,8 +100,17 @@
 
                     <hr class="my-4">
 
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-outline-danger w-100 mb-2" @onclick="() => ExternalLogin('Google')">
+                            <i class="bi bi-google me-2"></i> Continue with Google
+                        </button>
+                        <button type="button" class="btn btn-outline-primary w-100" @onclick="() => ExternalLogin('Facebook')">
+                            <i class="bi bi-facebook me-2"></i> Continue with Facebook
+                        </button>
+                    </div>
+
                     <div class="text-center">
-                        <p class="mb-0">Don't have an account? 
+                        <p class="mb-0">Don't have an account?
                             <a href="/register" class="text-decoration-none fw-bold">Sign up</a>
                         </p>
                     </div>
@@ -230,4 +239,10 @@
             isLoading = false;
         }
     }
-} 
+
+    private void ExternalLogin(string provider)
+    {
+        var url = $"/auth/external/{provider}?returnUrl={Uri.EscapeDataString(ReturnUrl ?? "/")}";
+        Navigation.NavigateTo(url, forceLoad: true);
+    }
+}
