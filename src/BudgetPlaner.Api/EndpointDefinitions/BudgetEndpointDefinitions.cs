@@ -1,35 +1,32 @@
 ﻿using BudgetPlaner.Api.Bootstrap;
-using BudgetPlaner.Api.Constants.EndpointNames;
+using BudgetPlaner.Api.Constants;
 using BudgetPlaner.Application.Services.Budget;
 using BudgetPlaner.Domain;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using BudgetPlaner.Api.Constants.EndpointNames;
 
 namespace BudgetPlaner.Api.EndpointDefinitions;
 
 public class BudgetEndpointDefinitions : IEndpointDefinition
 {
-    private const string BasePath = $"/{EndpointNames.ApiBasePath}/{EndpointNames.BudgetsPath}";
-    
     public void DefineEndpoints(WebApplication app)
     {
-        var budgets = app.MapGroup(BasePath).RequireAuthorization();
-
         // Budget CRUD operations
-        budgets.MapPost("/", CreateBudget);
-        budgets.MapGet("/", GetUserBudgets);
-        budgets.MapGet("/{id:int}", GetBudgetById);
-        budgets.MapPut("/{id:int}", UpdateBudget);
-        budgets.MapDelete("/{id:int}", DeleteBudget);
+        app.MapGet(ApiEndpoints.Budgets.GetAll, GetUserBudgets).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Budgets.Get, GetBudgetById).RequireAuthorization();
+        app.MapPost(ApiEndpoints.Budgets.Create, CreateBudget).RequireAuthorization();
+        app.MapPut(ApiEndpoints.Budgets.Update, UpdateBudget).RequireAuthorization();
+        app.MapDelete(ApiEndpoints.Budgets.Delete, DeleteBudget).RequireAuthorization();
 
         // Budget category operations
-        budgets.MapPost($"/{{budgetId:int}}/{EndpointNames.CategoriesPath}", AddCategoryToBudget);
-        budgets.MapPut($"/{EndpointNames.CategoriesPath}/{{categoryId:int}}", UpdateBudgetCategory);
-        budgets.MapDelete($"/{EndpointNames.CategoriesPath}/{{categoryId:int}}", RemoveCategoryFromBudget);
+        app.MapPost(ApiEndpoints.Budgets.AddCategory, AddCategoryToBudget).RequireAuthorization();
+        app.MapPut(ApiEndpoints.Budgets.UpdateCategory, UpdateBudgetCategory).RequireAuthorization();
+        app.MapDelete(ApiEndpoints.Budgets.RemoveCategory, RemoveCategoryFromBudget).RequireAuthorization();
 
         // Budget analysis
-        budgets.MapGet($"/{{id:int}}/{EndpointNames.UtilizationPath}", GetBudgetUtilization);
-        budgets.MapGet($"/{{id:int}}/{EndpointNames.OverBudgetPath}", GetOverBudgetCategories);
+        app.MapGet(ApiEndpoints.Budgets.GetUtilization, GetBudgetUtilization).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Budgets.GetOverBudget, GetOverBudgetCategories).RequireAuthorization();
     }
 
     public void DefineServices(IServiceCollection services)
@@ -46,7 +43,7 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
         var createdBudget = await budgetService.CreateBudgetAsync(budget, userId);
-        return Results.Created($"{BasePath}/{createdBudget.Id}", createdBudget);
+        return Results.Created($"/api/budgets/{createdBudget.Id}", createdBudget);
     }
 
     private static async Task<IResult> GetUserBudgets(
@@ -109,7 +106,7 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
 
         var budgetCategory = await budgetService.AddCategoryToBudgetAsync(
             budgetId, request.CategoryId, request.AllocatedAmount, userId);
-        return Results.Created($"{BasePath}/{EndpointNames.CategoriesPath}/{budgetCategory.Id}", budgetCategory);
+        return Results.Created($"/api/budgets/categories/{budgetCategory.Id}", budgetCategory);
     }
 
     private static async Task<IResult> UpdateBudgetCategory(

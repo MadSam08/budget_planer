@@ -1,4 +1,5 @@
 ﻿using BudgetPlaner.Api.Bootstrap;
+using BudgetPlaner.Api.Constants;
 using BudgetPlaner.Api.Constants.EndpointNames;
 using BudgetPlaner.Api.Extensions;
 using BudgetPlaner.Api.Mappers;
@@ -14,31 +15,29 @@ namespace BudgetPlaner.Api.EndpointDefinitions;
 
 public class CurrencyEndpointDefinitions : IEndpointDefinition
 {
-    private const string BasePath = $"{EndpointNames.BudgetBasePath}/{EndpointNames.CurrencyPath}";
-
     public void DefineEndpoints(WebApplication app)
     {
-        app.MapGet(BasePath, GetCurrencies)
+        app.MapGet(ApiEndpoints.Currencies.GetAll, GetCurrencies)
             .WithTags(SwaggerTags.CurrencyTag)
             .RequireAuthorization();
 
-        app.MapGet(BasePath + "/{id}", GetCurrency)
+        app.MapGet(ApiEndpoints.Currencies.Get, GetCurrency)
             .WithTags(SwaggerTags.CurrencyTag)
             .RequireAuthorization();
 
-        app.MapPost(BasePath, AddCurrency)
+        app.MapPost(ApiEndpoints.Currencies.Create, AddCurrency)
             .WithTags(SwaggerTags.CurrencyTag)
             .RequireAuthorization();
 
-        app.MapPut(BasePath + "/{id}", UpdateCurrency)
+        app.MapPut(ApiEndpoints.Currencies.Update, UpdateCurrency)
             .WithTags(SwaggerTags.CurrencyTag)
             .RequireAuthorization();
 
-        app.MapDelete(BasePath + "/{id}", ArchiveCurrency)
+        app.MapDelete(ApiEndpoints.Currencies.Delete, ArchiveCurrency)
             .WithTags(SwaggerTags.CurrencyTag)
             .RequireAuthorization();
 
-        app.MapPut(BasePath + "/{id}", RestoreCurrency)
+        app.MapPatch(ApiEndpoints.Currencies.Restore, RestoreCurrency)
             .WithTags(SwaggerTags.CurrencyTag)
             .RequireAuthorization();
     }

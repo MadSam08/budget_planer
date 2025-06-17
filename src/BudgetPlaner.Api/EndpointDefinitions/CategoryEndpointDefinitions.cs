@@ -1,4 +1,5 @@
 ﻿using BudgetPlaner.Api.Bootstrap;
+using BudgetPlaner.Api.Constants;
 using BudgetPlaner.Api.Constants.EndpointNames;
 using BudgetPlaner.Api.Extensions;
 using BudgetPlaner.Api.Mappers;
@@ -14,33 +15,31 @@ namespace BudgetPlaner.Api.EndpointDefinitions
 {
     public class CategoryEndpointDefinitions : IEndpointDefinition
     {
-        private const string BasePath = $"{EndpointNames.BudgetBasePath}/{EndpointNames.CategoryPath}";
-
         public void DefineEndpoints(WebApplication app)
         {
-            app.MapGet(BasePath, GetCategories)
+            app.MapGet(ApiEndpoints.Categories.GetAll, GetCategories)
                 .WithTags(SwaggerTags.CategoryTag)
                 .RequireAuthorization();
 
-            app.MapGet(BasePath + "/{id}", GetCategory)
+            app.MapGet(ApiEndpoints.Categories.Get, GetCategory)
                 .WithTags(SwaggerTags.CategoryTag)
                 .RequireAuthorization();
 
-            app.MapPost(BasePath, AddCategory)
+            app.MapPost(ApiEndpoints.Categories.Create, AddCategory)
                 .WithTags(SwaggerTags.CategoryTag)
                 .RequireAuthorization();
 
-            app.MapPut(BasePath + "/{id}", UpdateCategory)
+            app.MapPut(ApiEndpoints.Categories.Update, UpdateCategory)
                 .WithTags(SwaggerTags.CategoryTag)
                 .RequireAuthorization();
 
-            app.MapDelete(BasePath + "/{id}", ArchiveCategory)
+            app.MapDelete(ApiEndpoints.Categories.Delete, ArchiveCategory)
                 .WithTags(SwaggerTags.CategoryTag)
                 .RequireAuthorization();
 
-            app.MapPut(BasePath + "/" + EndpointNames.RestorePath + "/{id}", RestoreCategory)
-                .WithTags(SwaggerTags.CategoryTag)
-                .RequireAuthorization();
+                    app.MapPatch(ApiEndpoints.Categories.Restore, RestoreCategory)
+            .WithTags(SwaggerTags.CategoryTag)
+            .RequireAuthorization();
         }
 
         private static async Task<IResult> GetCategories([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,

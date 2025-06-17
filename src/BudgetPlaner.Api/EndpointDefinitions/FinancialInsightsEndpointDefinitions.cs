@@ -1,33 +1,29 @@
 using BudgetPlaner.Api.Bootstrap;
-using BudgetPlaner.Api.Constants.EndpointNames;
+using BudgetPlaner.Api.Constants;
 using BudgetPlaner.Application.Services.Insights;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using BudgetPlaner.Api.Constants.EndpointNames;
 
 namespace BudgetPlaner.Api.EndpointDefinitions;
 
 public class FinancialInsightsEndpointDefinitions : IEndpointDefinition
 {
-    private const string BasePath = $"/{EndpointNames.ApiBasePath}/{EndpointNames.InsightsPath}";
-    
     public void DefineEndpoints(WebApplication app)
     {
-        var insights = app.MapGroup(BasePath).RequireAuthorization();
-
         // Get insights
-        insights.MapGet("/", GetUserInsights);
-        insights.MapGet($"/{EndpointNames.UnreadPath}", GetUnreadInsights);
-        insights.MapGet($"/{EndpointNames.GeneratePath}", GenerateMonthlyInsights);
+        app.MapGet(ApiEndpoints.Insights.GetAll, GetUserInsights).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Insights.Get, GetInsightById).RequireAuthorization();
+        app.MapPost(ApiEndpoints.Insights.Create, GenerateMonthlyInsights).RequireAuthorization();
 
         // Insight actions
-        insights.MapPut($"/{{id:int}}/{EndpointNames.ReadPath}", MarkInsightAsRead);
-        insights.MapPut($"/{{id:int}}/{EndpointNames.ActionTakenPath}", MarkInsightActionTaken);
+        app.MapPut(ApiEndpoints.Insights.MarkAsRead, MarkInsightAsRead).RequireAuthorization();
+        app.MapPut(ApiEndpoints.Insights.MarkActionTaken, MarkInsightActionTaken).RequireAuthorization();
 
         // Specific analysis endpoints
-        insights.MapGet($"/{EndpointNames.SpendingPatternsPath}", AnalyzeSpendingPatterns);
-        insights.MapGet($"/{EndpointNames.SavingsOpportunitiesPath}", GenerateSavingsOpportunities);
-        insights.MapGet($"/{EndpointNames.BudgetPerformancePath}", AnalyzeBudgetPerformance);
-        insights.MapGet($"/{EndpointNames.LoanOptimizationPath}/{{loanId:int}}", GenerateLoanOptimization);
+        app.MapGet(ApiEndpoints.Insights.SpendingPatterns, AnalyzeSpendingPatterns).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Insights.SavingsOpportunities, GenerateSavingsOpportunities).RequireAuthorization();
+        app.MapGet(ApiEndpoints.Insights.BudgetPerformance, AnalyzeBudgetPerformance).RequireAuthorization();
     }
 
     public void DefineServices(IServiceCollection services)
@@ -44,6 +40,19 @@ public class FinancialInsightsEndpointDefinitions : IEndpointDefinition
 
         var insights = await insightService.GetUserInsightsAsync(userId);
         return Results.Ok(insights);
+    }
+
+    private static async Task<IResult> GetInsightById(
+        int id,
+        [FromServices] IFinancialInsightService insightService,
+        ClaimsPrincipal user)
+    {
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
+
+        // This would need to be implemented in the service
+        // For now, return NotFound as placeholder
+        return Results.NotFound();
     }
 
     private static async Task<IResult> GetUnreadInsights(

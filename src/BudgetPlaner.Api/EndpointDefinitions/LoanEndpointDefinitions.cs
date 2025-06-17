@@ -1,4 +1,5 @@
 ﻿using BudgetPlaner.Api.Bootstrap;
+using BudgetPlaner.Api.Constants;
 using BudgetPlaner.Api.Constants.EndpointNames;
 using BudgetPlaner.Api.Extensions;
 using BudgetPlaner.Api.Mappers;
@@ -15,27 +16,29 @@ namespace BudgetPlaner.Api.EndpointDefinitions;
 
 public class LoanEndpointDefinitions : IEndpointDefinition
 {
-    private const string BasePath = $"{EndpointNames.BudgetBasePath}/{EndpointNames.LoanPath}";
-    
     public void DefineEndpoints(WebApplication app)
     {
-        app.MapGet(BasePath, GetCredits)
+        app.MapGet(ApiEndpoints.Loans.GetAll, GetCredits)
             .WithTags(SwaggerTags.LoanTag)
             .RequireAuthorization();
         
-        app.MapGet(BasePath + "/{id}", GetCredit)
+        app.MapGet(ApiEndpoints.Loans.Get, GetCredit)
             .WithTags(SwaggerTags.LoanTag)
             .RequireAuthorization();
 
-        app.MapPost(BasePath, AddCredit)
+        app.MapPost(ApiEndpoints.Loans.Create, AddCredit)
             .WithTags(SwaggerTags.LoanTag)
             .RequireAuthorization();
         
-        app.MapPost(BasePath+ "/{id}", GenerateInterestRate)
+        app.MapPost(ApiEndpoints.Loans.GenerateInterestRates, GenerateInterestRate)
             .WithTags(SwaggerTags.LoanTag)
             .RequireAuthorization();
 
-        app.MapPut(BasePath + "/{id}", UpdateCredit)
+        app.MapPut(ApiEndpoints.Loans.Update, UpdateCredit)
+            .WithTags(SwaggerTags.LoanTag)
+            .RequireAuthorization();
+            
+        app.MapDelete(ApiEndpoints.Loans.Delete, DeleteCredit)
             .WithTags(SwaggerTags.LoanTag)
             .RequireAuthorization();
     }
@@ -131,6 +134,24 @@ public class LoanEndpointDefinitions : IEndpointDefinition
                         .SetProperty(c => c.UpdateDate, DateTime.UtcNow));
 
         return Results.NoContent();
+    }
+    
+    private static async Task<IResult> DeleteCredit([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
+        [FromServices] IHttpContextAccessor httpContextAccessor,
+        [FromServices] SqidsEncoder<int> sqidsEncoder, string id)
+    {
+        var idDecoded = sqidsEncoder.Decode(id).SingleOrDefault();
+        if (idDecoded == 0) return Results.BadRequest();
+
+        var userId = httpContextAccessor.GetUserIdFromClaims();
+
+        if (string.IsNullOrEmpty(userId))
+            return Results.BadRequest();
+
+        var deletedCount = await unitOfWork.Repository<LoanEntity>()
+            .ExecuteDeleteAsync(x => x.Id == idDecoded && x.UserId.Equals(userId));
+
+        return deletedCount > 0 ? Results.NoContent() : Results.NotFound();
     }
 
     public void DefineServices(IServiceCollection services)

@@ -1,4 +1,5 @@
 ﻿using BudgetPlaner.Api.Bootstrap;
+using BudgetPlaner.Api.Constants;
 using BudgetPlaner.Api.Constants.EndpointNames;
 using BudgetPlaner.Api.Extensions;
 using BudgetPlaner.Api.Mappers;
@@ -15,27 +16,25 @@ namespace BudgetPlaner.Api.EndpointDefinitions;
 
 public class SpendingEndpointDefinitions : IEndpointDefinition
 {
-    private const string BasePath = $"{EndpointNames.BudgetBasePath}/{EndpointNames.SpendingPath}";
-    
     public void DefineEndpoints(WebApplication app)
     {
-        app.MapGet(BasePath, GetSpendings)
+        app.MapGet(ApiEndpoints.Expenses.GetAll, GetSpendings)
             .WithTags(SwaggerTags.SpendingTag)
             .RequireAuthorization();
 
-        app.MapGet(BasePath + "/{id}", GetSpending)
+        app.MapGet(ApiEndpoints.Expenses.Get, GetSpending)
             .WithTags(SwaggerTags.SpendingTag)
             .RequireAuthorization();
 
-        app.MapPost(BasePath, AddSpending)
+        app.MapPost(ApiEndpoints.Expenses.Create, AddSpending)
             .WithTags(SwaggerTags.SpendingTag)
             .RequireAuthorization();
 
-        app.MapPut(BasePath + "/{id}", UpdateSpending)
+        app.MapPut(ApiEndpoints.Expenses.Update, UpdateSpending)
             .WithTags(SwaggerTags.SpendingTag)
             .RequireAuthorization();
         
-        app.MapDelete(BasePath + "/{id}", DeleteSpending)
+        app.MapDelete(ApiEndpoints.Expenses.Delete, DeleteSpending)
             .WithTags(SwaggerTags.SpendingTag)
             .RequireAuthorization();
     }

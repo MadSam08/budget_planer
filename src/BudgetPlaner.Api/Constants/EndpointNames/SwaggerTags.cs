@@ -1,4 +1,4 @@
-﻿namespace BudgetPlaner.Api.Constants.EndpointNames;
+namespace BudgetPlaner.Api.Constants.EndpointNames;
 
 public static class SwaggerTags
 {
@@ -8,4 +8,4 @@ public static class SwaggerTags
     public const string LoanTag = "Loan";
     public const string IncomeTag = "Income";
     public const string SpendingTag = "Spending";
-}
+} 

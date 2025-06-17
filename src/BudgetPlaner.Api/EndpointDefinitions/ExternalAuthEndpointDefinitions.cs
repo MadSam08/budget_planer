@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using BudgetPlaner.Api.Bootstrap;
+using BudgetPlaner.Api.Constants;
 using BudgetPlaner.Infrastructure.DatabaseContext;
 using BudgetPlaner.Infrastructure.UnitOfWork;
 using BudgetPlaner.Domain;
