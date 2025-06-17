@@ -4,9 +4,11 @@
 @using BudgetPlaner.UI.ApiClients
 @using BudgetPlaner.UI.Components.Shared
 @attribute [Authorize]
+
 @inject ICategoryService CategoryService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@inject ILogger<Index> _logger
 
 <PageTitle>Categories - Budget Planner</PageTitle>
 

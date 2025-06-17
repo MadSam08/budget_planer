@@ -5,4 +5,5 @@ public class BudgetPlanerClaims
     public const string AccessToken = "AccessToken";
     public const string RefreshToken = "RefreshToken";
     public const string ExpiresIn = "ExpiresIn";
+    public const string ExpiresAt = "ExpiresAt";
 }
