@@ -1,100 +1,222 @@
 @page "/settings"
 @layout AppLayout
 @using Microsoft.AspNetCore.Authorization
-@using BudgetPlaner.Contracts.Api.Profile
-@using BudgetPlaner.UI.ApiClients
+@using BudgetPlaner.Contracts.Api
 @rendermode InteractiveServer
 @attribute [Authorize]
 @inject ISnackbar Snackbar
+@inject IBudgetPlanerSdkService SdkService
+@inject IDialogService DialogService
 
 <PageTitle>Settings - Budget Planner</PageTitle>
 
 <MudText Typo="Typo.h4" GutterBottom="true">Settings</MudText>
-<MudText Typo="Typo.body1" Class="mb-6">Manage your profile settings.</MudText>
+<MudText Typo="Typo.body1" Class="mb-6">Manage your application settings and currencies.</MudText>
 
-@if (isLoading)
-{
-    <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
-}
-else
-{
-    <EditForm Model="profile" OnValidSubmit="UpdateProfileAsync">
-        <DataAnnotationsValidator />
-        <MudPaper Class="pa-6" Elevation="2">
-            <MudTextField @bind-Value="profile.FullName" Label="Full Name" Variant="Variant.Outlined" Class="mb-4" />
-            <ValidationMessage For="@(() => profile.FullName)" />
-
-            <MudTextField @bind-Value="profile.PreferredCurrency" Label="Preferred Currency" Variant="Variant.Outlined" Class="mb-4" />
-            <ValidationMessage For="@(() => profile.PreferredCurrency)" />
-
-            <MudTextField T="decimal" @bind-Value="profile.MonthlySavingsGoal" Label="Monthly Savings Goal" Variant="Variant.Outlined" Class="mb-4" />
-            <ValidationMessage For="@(() => profile.MonthlySavingsGoal)" />
-
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" Disabled="@isSubmitting">
-                @if (isSubmitting)
-                {
-                    <MudProgressCircular Indeterminate="true" Size="Size.Small" Class="me-2" />
-                }
-                else
-                {
-                    
-                }
+<!-- Currency Management Section -->
+<MudPaper Class="pa-6 mb-6" Elevation="2">
+    <MudStack Spacing="4">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+            <MudText Typo="Typo.h5">Currency Management</MudText>
+            <MudButton Color="Color.Primary" 
+                       Variant="Variant.Filled" 
+                       StartIcon="@Icons.Material.Filled.Add"
+                       OnClick="@(() => OpenCurrencyDialog())">
+                Add Currency
             </MudButton>
-        </MudPaper>
-    </EditForm>
-}
+        </MudStack>
+
+        @if (isLoadingCurrencies)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+        }
+        else if (currencies.Any())
+        {
+            <MudDataGrid Items="@currencies" Striped="true" Hover="true" ReadOnly="false">
+                <Columns>
+                    <PropertyColumn Property="x => x.Name" Title="Name" />
+                    <PropertyColumn Property="x => x.Code" Title="Code" />
+                    <PropertyColumn Property="x => x.NationalBankRate" Title="Exchange Rate" Format="F4" />
+                    <TemplateColumn Title="Actions" Sortable="false">
+                        <CellTemplate>
+                            <MudStack Row="true" Spacing="2">
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                             Color="Color.Primary" 
+                                             Size="Size.Small"
+                                             OnClick="@(() => OpenCurrencyDialog(context.Item))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                             Color="Color.Error" 
+                                             Size="Size.Small"
+                                             OnClick="@(() => DeleteCurrency(context.Item))" />
+                            </MudStack>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Info" Class="my-4">
+                <MudText>No currencies found. Add your first currency to get started.</MudText>
+            </MudAlert>
+        }
+    </MudStack>
+</MudPaper>
+
+<!-- Common Currencies Section -->
+<MudPaper Class="pa-6 mb-6" Elevation="2">
+    <MudStack Spacing="4">
+        <MudText Typo="Typo.h5">Quick Add Common Currencies</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary">Click to quickly add popular currencies:</MudText>
+        <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap">
+            @foreach (var commonCurrency in GetCommonCurrencies())
+            {
+                <MudChip T="string" 
+                         Color="Color.Primary" 
+                         Variant="Variant.Outlined"
+                         OnClick="@(() => AddCommonCurrency(commonCurrency))"
+                         Disabled="@(currencies.Any(c => c.Code == commonCurrency.Code))">
+                    @commonCurrency.Code - @commonCurrency.Name
+                </MudChip>
+            }
+        </MudStack>
+    </MudStack>
+</MudPaper>
+
+<!-- Profile Settings Section (Placeholder for future implementation) -->
+<MudPaper Class="pa-6" Elevation="2">
+    <MudStack Spacing="4">
+        <MudText Typo="Typo.h5">Profile Settings</MudText>
+        <MudAlert Severity="Severity.Info">
+            <MudText>Profile management will be implemented in a future update.</MudText>
+        </MudAlert>
+    </MudStack>
+</MudPaper>
 
 @code {
-    private UserProfileModel profile = new();
-    private bool isLoading = true;
-    private bool isSubmitting;
+    private List<CurrencyModel> currencies = new();
+    private bool isLoadingCurrencies = true;
 
     protected override async Task OnInitializedAsync()
     {
-        // try
-        // {
-        //     var result = await UserProfileService.GetProfileAsync();
-        //     profile = result ?? new UserProfileModel();
-        // }
-        // catch
-        // {
-        //     Snackbar.Add("Failed to load profile", Severity.Error);
-        // }
-        // finally
-        // {
-        //     isLoading = false;
-        // }
+        await LoadCurrencies();
     }
 
-    private async Task UpdateProfileAsync()
+    private async Task LoadCurrencies()
     {
-        // if (isSubmitting)
-        // {
-        //     return;
-        // }
-        //
-        // isSubmitting = true;
-        // StateHasChanged();
-        //
-        // try
-        // {
-        //     var success = await UserProfileService.UpdateProfileAsync(profile);
-        //     if (success)
-        //     {
-        //         Snackbar.Add("Profile updated", Severity.Success);
-        //     }
-        //     else
-        //     {
-        //         Snackbar.Add("Failed to update profile", Severity.Error);
-        //     }
-        // }
-        // catch
-        // {
-        //     Snackbar.Add("Failed to update profile", Severity.Error);
-        // }
-        // finally
-        // {
-        //     isSubmitting = false;
-        // }
+        isLoadingCurrencies = true;
+        StateHasChanged();
+
+        try
+        {
+            var result = await SdkService.Currencies.GetCurrenciesAsync();
+            currencies = result.ToList();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Snackbar.Add("You are not authorized to view currencies", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to load currencies: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            isLoadingCurrencies = false;
+            StateHasChanged();
+        }
     }
-}
+
+    private async Task OpenCurrencyDialog(CurrencyModel? currency = null)
+    {
+        var parameters = new DialogParameters
+        {
+            ["Currency"] = currency ?? new CurrencyModel { Name = string.Empty },
+            ["OnCurrencyChanged"] = EventCallback.Factory.Create<CurrencyModel>(this, OnCurrencyChanged)
+        };
+
+        var options = new DialogOptions 
+        { 
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<CurrencyDialog>(
+            currency == null ? "Add Currency" : "Edit Currency", 
+            parameters, 
+            options);
+
+        var result = await dialog.Result;
+        
+        if (!result.Canceled)
+        {
+            await LoadCurrencies();
+        }
+    }
+
+    private async Task OnCurrencyChanged(CurrencyModel currency)
+    {
+        await LoadCurrencies();
+    }
+
+    private async Task DeleteCurrency(CurrencyModel currency)
+    {
+        var dialog = await DialogService.ShowMessageBox(
+            "Delete Currency",
+            $"Are you sure you want to delete '{currency.Name}'? This action cannot be undone.",
+            yesText: "Delete",
+            cancelText: "Cancel");
+
+        if (dialog == true)
+        {
+            try
+            {
+                await SdkService.Currencies.DeleteCurrencyAsync(currency.Id);
+                Snackbar.Add("Currency deleted successfully", Severity.Success);
+                await LoadCurrencies();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Snackbar.Add("You are not authorized to delete currencies", Severity.Error);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Failed to delete currency: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task AddCommonCurrency(CurrencyModel commonCurrency)
+    {
+        try
+        {
+            await SdkService.Currencies.CreateCurrencyAsync(commonCurrency);
+            Snackbar.Add($"{commonCurrency.Name} added successfully", Severity.Success);
+            await LoadCurrencies();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Snackbar.Add("You are not authorized to add currencies", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Failed to add {commonCurrency.Name}: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private List<CurrencyModel> GetCommonCurrencies()
+    {
+        return new List<CurrencyModel>
+        {
+            new() { Name = "US Dollar", Code = "USD", NationalBankRate = 1.0000m },
+            new() { Name = "Euro", Code = "EUR", NationalBankRate = 0.8500m },
+            new() { Name = "British Pound", Code = "GBP", NationalBankRate = 0.7300m },
+            new() { Name = "Japanese Yen", Code = "JPY", NationalBankRate = 110.0000m },
+            new() { Name = "Canadian Dollar", Code = "CAD", NationalBankRate = 1.2500m },
+            new() { Name = "Australian Dollar", Code = "AUD", NationalBankRate = 1.3500m },
+            new() { Name = "Swiss Franc", Code = "CHF", NationalBankRate = 0.9200m },
+            new() { Name = "Chinese Yuan", Code = "CNY", NationalBankRate = 6.4500m }
+        };
+    }
+} 

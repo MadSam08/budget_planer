@@ -1,0 +1,298 @@
+@page "/budgets/create"
+@layout AppLayout
+@using Microsoft.AspNetCore.Authorization
+@using BudgetPlaner.Contracts.Api.Budget
+@using BudgetPlaner.Contracts.Api
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+@inject ISnackbar Snackbar
+@inject ILogger<Create> Logger
+@inject IBudgetPlanerSdkService SdkService
+@inject NavigationManager Navigation
+
+<PageTitle>Create Budget - Budget Planner</PageTitle>
+
+<div class="d-flex justify-space-between align-center mb-6">
+    <div>
+        <MudText Typo="Typo.h4" GutterBottom="true">Create New Budget</MudText>
+        <MudText Typo="Typo.body1">Set up a new budget to track your financial goals.</MudText>
+    </div>
+    <MudButton Variant="Variant.Text" 
+               Color="Color.Default" 
+               StartIcon="@Icons.Material.Filled.ArrowBack"
+               Href="/budgets">
+        Back to Budgets
+    </MudButton>
+</div>
+
+<MudCard>
+    <MudCardContent>
+        <EditForm Model="@_budget" OnValidSubmit="@CreateBudgetAsync">
+            <DataAnnotationsValidator />
+            
+            <MudGrid>
+                <!-- Budget Name -->
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_budget.Name"
+                                  Label="Budget Name"
+                                  Required="true"
+                                  HelperText="Enter a descriptive name for your budget"
+                                  Variant="Variant.Outlined" />
+                    <ValidationMessage For="@(() => _budget.Name)" />
+                </MudItem>
+
+                <!-- Total Budget Amount -->
+                <MudItem xs="12" md="6">
+                    <MudNumericField @bind-Value="_budget.TotalBudgetAmount"
+                                     Label="Total Budget Amount"
+                                     Required="true"
+                                     Min="0"
+                                     Step="0.01M"
+                                     Culture="@System.Globalization.CultureInfo.InvariantCulture"
+                                     Format="C"
+                                     HelperText="Enter the total amount for this budget"
+                                     Variant="Variant.Outlined" />
+                    <ValidationMessage For="@(() => _budget.TotalBudgetAmount)" />
+                </MudItem>
+
+                <!-- Budget Period Type -->
+                <MudItem xs="12" md="6">
+                    <MudSelect @bind-Value="_budget.PeriodType" 
+                               Label="Budget Period"
+                               Required="true"
+                               Variant="Variant.Outlined">
+                        @foreach (var periodType in Enum.GetValues(typeof(BudgetPeriodType)).Cast<BudgetPeriodType>())
+                        {
+                            <MudSelectItem Value="periodType">@GetPeriodTypeDisplayName(periodType)</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <ValidationMessage For="@(() => _budget.PeriodType)" />
+                </MudItem>
+
+                <!-- Currency -->
+                <MudItem xs="12" md="6">
+                    <MudSelect @bind-Value="_budget.CurrencyId" 
+                               Label="Currency"
+                               Required="true"
+                               Variant="Variant.Outlined">
+                        @if (_isLoadingCurrencies)
+                        {
+                            <MudSelectItem Value="0" Disabled="true">Loading currencies...</MudSelectItem>
+                        }
+                        else
+                        {
+                            @foreach (var currency in _currencies)
+                            {
+                                <MudSelectItem Value="@GetCurrencyIntId(currency.Id)">
+                                    @currency.Name (@currency.Code)
+                                </MudSelectItem>
+                            }
+                        }
+                    </MudSelect>
+                    <ValidationMessage For="@(() => _budget.CurrencyId)" />
+                </MudItem>
+
+                <!-- Start Date -->
+                <MudItem xs="12" md="6">
+                    <MudDatePicker @bind-Date="StartDate"
+                                   Label="Start Date"
+                                   Required="true"
+                                   Variant="Variant.Outlined" />
+                    <ValidationMessage For="@(() => _budget.StartDate)" />
+                </MudItem>
+
+                <!-- End Date -->
+                <MudItem xs="12" md="6">
+                    <MudDatePicker @bind-Date="_budget.EndDate"
+                                   Label="End Date"
+                                   Required="true"
+                                   MinDate="_budget.StartDate"
+                                   Variant="Variant.Outlined" />
+                    <ValidationMessage For="@(() => _budget.EndDate)" />
+                </MudItem>
+
+                <!-- Status -->
+                <MudItem xs="12" md="6">
+                    <MudSelect @bind-Value="_budget.Status" 
+                               Label="Budget Status"
+                               Required="true"
+                               Variant="Variant.Outlined">
+                        @foreach (var status in Enum.GetValues(typeof(BudgetStatus)).Cast<BudgetStatus>())
+                        {
+                            <MudSelectItem Value="status">@GetStatusDisplayName(status)</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <ValidationMessage For="@(() => _budget.Status)" />
+                </MudItem>
+            </MudGrid>
+
+            <MudDivider Class="my-4" />
+
+            <div class="d-flex justify-end gap-3">
+                <MudButton Variant="Variant.Text" 
+                           Color="Color.Default"
+                           OnClick="@Cancel">
+                    Cancel
+                </MudButton>
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary"
+                           ButtonType="ButtonType.Submit"
+                           Disabled="@_isSubmitting"
+                           StartIcon="@(_isSubmitting ? Icons.Material.Filled.HourglassEmpty : Icons.Material.Filled.Save)">
+                    @if (_isSubmitting)
+                    {
+                        <MudText>Creating...</MudText>
+                    }
+                    else
+                    {
+                        <MudText>Create Budget</MudText>
+                    }
+                </MudButton>
+            </div>
+        </EditForm>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    private BudgetModel _budget = new()
+    {
+        StartDate = DateTime.Today,
+        EndDate = DateTime.Today.AddMonths(1),
+        Status = BudgetStatus.Active,
+        PeriodType = BudgetPeriodType.Monthly
+    };
+
+    private DateTime? StartDate
+    {
+        get => _budget.StartDate;
+        set
+        {
+            if (value.HasValue)
+            {
+                _budget.StartDate = value.Value;
+                OnStartDateChanged(value.Value);
+            }
+        }
+    }
+
+    private List<CurrencyModel> _currencies = new();
+    private bool _isSubmitting = false;
+    private bool _isLoadingCurrencies = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCurrenciesAsync();
+    }
+
+    private async Task LoadCurrenciesAsync()
+    {
+        _isLoadingCurrencies = true;
+        StateHasChanged();
+
+        try
+        {
+            var currencies = await SdkService.Currencies.GetCurrenciesAsync();
+            _currencies = currencies.ToList();
+            
+            // Set default currency if available
+            if (_currencies.Any())
+            {
+                var defaultCurrency = _currencies.FirstOrDefault(c => c.Code == "USD") ?? _currencies.First();
+                _budget.CurrencyId = GetCurrencyIntId(defaultCurrency.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load currencies");
+            Snackbar.Add("Failed to load currencies", Severity.Error);
+        }
+        finally
+        {
+            _isLoadingCurrencies = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CreateBudgetAsync()
+    {
+        if (_isSubmitting) return;
+
+        _isSubmitting = true;
+        StateHasChanged();
+
+        try
+        {
+            var createdBudget = await SdkService.Budgets.CreateBudgetAsync(_budget);
+            
+            Snackbar.Add("Budget created successfully!", Severity.Success);
+            Logger.LogInformation("Budget created successfully: {BudgetName}", _budget.Name);
+            
+            // Navigate back to budgets list
+            Navigation.NavigateTo("/budgets");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to create budget");
+            Snackbar.Add("Failed to create budget. Please try again.", Severity.Error);
+        }
+        finally
+        {
+            _isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/budgets");
+    }
+
+    private void OnStartDateChanged(DateTime newStartDate)
+    {
+        // Auto-calculate end date based on period type
+        _budget.EndDate = _budget.PeriodType switch
+        {
+            BudgetPeriodType.Monthly => newStartDate.AddMonths(1).AddDays(-1),
+            BudgetPeriodType.Quarterly => newStartDate.AddMonths(3).AddDays(-1),
+            BudgetPeriodType.Yearly => newStartDate.AddYears(1).AddDays(-1),
+            _ => newStartDate.AddMonths(1).AddDays(-1)
+        };
+    }
+
+    private string GetPeriodTypeDisplayName(BudgetPeriodType periodType)
+    {
+        return periodType switch
+        {
+            BudgetPeriodType.Monthly => "Monthly",
+            BudgetPeriodType.Quarterly => "Quarterly (3 months)",
+            BudgetPeriodType.Yearly => "Yearly (12 months)",
+            _ => periodType.ToString()
+        };
+    }
+
+    private string GetStatusDisplayName(BudgetStatus status)
+    {
+        return status switch
+        {
+            BudgetStatus.Active => "Active",
+            BudgetStatus.Inactive => "Inactive",
+            BudgetStatus.Completed => "Completed",
+            _ => status.ToString()
+        };
+    }
+
+    private int GetCurrencyIntId(string currencyId)
+    {
+        // Since the BudgetModel expects int CurrencyId but CurrencyModel has string Id
+        // we need to convert. For now, we'll use a simple hash or parse if it's a number
+        if (int.TryParse(currencyId, out var id))
+        {
+            return id;
+        }
+        
+        // If it's not a number, we'll need to map it somehow
+        // For now, just return the hash code as a fallback
+        return Math.Abs(currencyId.GetHashCode()) % 1000;
+    }
+} 

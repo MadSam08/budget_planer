@@ -14,10 +14,10 @@ public interface ICurrenciesApi
     Task<CurrencyModel> GetCurrencyAsync(string id);
 
     [Post(ApiEndpoints.Currencies.Create)]
-    Task<CurrencyModel> CreateCurrencyAsync([Body] CurrencyModel request);
+    Task<IApiResponse> CreateCurrencyAsync([Body] CurrencyModel request);
 
     [Put(ApiEndpoints.Currencies.Update)]
-    Task<CurrencyModel> UpdateCurrencyAsync(string id, [Body] CurrencyModel request);
+    Task<IApiResponse> UpdateCurrencyAsync(string id, [Body] CurrencyModel request);
 
     [Delete(ApiEndpoints.Currencies.Delete)]
     Task DeleteCurrencyAsync(string id);

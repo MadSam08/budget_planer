@@ -1,0 +1,149 @@
+@using BudgetPlaner.Contracts.Api
+@using Refit
+@using MudBlazor
+@inject ISnackbar Snackbar
+@inject IBudgetPlanerSdkService SdkService
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-width: 500px;">
+            <EditForm Model="@model" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="model.Name" 
+                                    Label="Currency Name" 
+                                    Variant="Variant.Outlined" 
+                                    Required="true"
+                                    For="@(() => model.Name)"
+                                    HelperText="Enter the full currency name (e.g., US Dollar)" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="model.Code" 
+                                    Label="Currency Code" 
+                                    Variant="Variant.Outlined"
+                                    For="@(() => model.Code)"
+                                    HelperText="Enter the 3-letter currency code (e.g., USD, EUR)" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudNumericField @bind-Value="model.NationalBankRate" 
+                                       Label="National Bank Rate" 
+                                       Variant="Variant.Outlined"
+                                       For="@(() => model.NationalBankRate)"
+                                       Format="F4"
+                                       HelperText="Exchange rate relative to base currency" />
+                    </MudItem>
+                </MudGrid>
+            </EditForm>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" 
+                   Variant="Variant.Filled" 
+                   OnClick="HandleValidSubmit"
+                   Disabled="@_isSubmitting">
+            @if (_isSubmitting)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                <MudText Class="ms-2">@(_isEditing ? "Updating..." : "Creating...")</MudText>
+            }
+            else
+            {
+                <MudText>@(_isEditing ? "Update" : "Create")</MudText>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    public IDialogService DialogService { get; set; } = default!;
+
+    [Parameter] 
+    public CurrencyModel Currency { get; set; } = new() { Name = string.Empty };
+
+    [Parameter] 
+    public EventCallback<CurrencyModel> OnCurrencyChanged { get; set; }
+
+    private CurrencyModel model = new() { Name = string.Empty };
+    private bool _isSubmitting = false;
+    private bool _isEditing => !string.IsNullOrEmpty(Currency.Id);
+
+    protected override void OnInitialized()
+    {
+        model = new CurrencyModel
+        {
+            Id = Currency.Id,
+            Name = Currency.Name ?? string.Empty,
+            Code = Currency.Code ?? string.Empty,
+            NationalBankRate = Currency.NationalBankRate
+        };
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (_isSubmitting) return;
+
+        if (string.IsNullOrWhiteSpace(model.Name))
+        {
+            Snackbar.Add("Currency name is required", Severity.Error);
+            return;
+        }
+
+        _isSubmitting = true;
+        StateHasChanged();
+
+        try
+        {
+            IApiResponse result;
+            
+            if (_isEditing)
+            { 
+                result = await SdkService.Currencies.UpdateCurrencyAsync(model.Id, model);
+                if (result.IsSuccessful)
+                {
+                    Snackbar.Add("Currency updated successfully", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add($"An error occurred: {result.Error.Content}", Severity.Error);
+                }
+            }
+            else
+            {
+                result = await SdkService.Currencies.CreateCurrencyAsync(model);
+                if (result.IsSuccessful)
+                {
+                    Snackbar.Add("Currency created successfully", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add($"An error occurred: {result.Error.Content}", Severity.Error);
+                }
+            }
+
+            await OnCurrencyChanged.InvokeAsync(model);
+            StateHasChanged();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Snackbar.Add("You are not authorized to perform this action", Severity.Error);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"An error occurred: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    private void Cancel()
+    {
+        // Handle cancel logic
+        StateHasChanged();
+    }
+} 

@@ -7,8 +7,8 @@ public record BudgetModel
     public int CurrencyId { get; set; }
     public decimal TotalBudgetAmount { get; set; }
     public BudgetPeriodType PeriodType { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
     public BudgetStatus Status { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

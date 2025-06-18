@@ -1,8 +1,14 @@
 @page "/budgets"
 @layout AppLayout
 @using Microsoft.AspNetCore.Authorization
+@using BudgetPlaner.Contracts.Api.Budget
 @rendermode InteractiveServer
 @attribute [Authorize]
+
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject ILogger<Index> Logger
+@inject IBudgetPlanerSdkService SdkService
 
 <PageTitle>My Budgets - Budget Planner</PageTitle>
 
@@ -13,80 +19,200 @@
     </div>
     <MudButton Variant="Variant.Filled" 
                Color="Color.Primary" 
-               StartIcon="Icons.Material.Filled.Add"
+               StartIcon="@Icons.Material.Filled.Add"
                Href="/budgets/create">
         Create Budget
     </MudButton>
 </div>
 
+@if (_isLoading)
+{
+    <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mb-4" />
+}
+
 <MudGrid>
-    <!-- Placeholder Budget Cards -->
-    <MudItem xs="12" md="6" lg="4">
-        <MudCard>
-            <MudCardContent>
-                <MudText Typo="Typo.h6" GutterBottom="true">Monthly Budget</MudText>
-                <MudProgressLinear Value="75" Color="Color.Success" Class="my-2" />
-                <div class="d-flex justify-space-between align-center">
-                    <MudText Typo="Typo.body2">$3,750 / $5,000</MudText>
-                    <MudChip T="string" Size="Size.Small" Color="Color.Success">Active</MudChip>
-                </div>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Size="Size.Small" Color="Color.Primary">View Details</MudButton>
-                <MudButton Size="Size.Small" Color="Color.Secondary">Edit</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
-    
-    <MudItem xs="12" md="6" lg="4">
-        <MudCard>
-            <MudCardContent>
-                <MudText Typo="Typo.h6" GutterBottom="true">Vacation Fund</MudText>
-                <MudProgressLinear Value="45" Color="Color.Warning" Class="my-2" />
-                <div class="d-flex justify-space-between align-center">
-                    <MudText Typo="Typo.body2">$1,125 / $2,500</MudText>
-                    <MudChip T="string" Size="Size.Small" Color="Color.Info">Planning</MudChip>
-                </div>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Size="Size.Small" Color="Color.Primary">View Details</MudButton>
-                <MudButton Size="Size.Small" Color="Color.Secondary">Edit</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
-    
-    <MudItem xs="12" md="6" lg="4">
-        <MudCard>
-            <MudCardContent>
-                <MudText Typo="Typo.h6" GutterBottom="true">Emergency Fund</MudText>
-                <MudProgressLinear Value="90" Color="Color.Error" Class="my-2" />
-                <div class="d-flex justify-space-between align-center">
-                    <MudText Typo="Typo.body2">$4,500 / $5,000</MudText>
-                    <MudChip T="string" Size="Size.Small" Color="Color.Error">Near Limit</MudChip>
-                </div>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Size="Size.Small" Color="Color.Primary">View Details</MudButton>
-                <MudButton Size="Size.Small" Color="Color.Secondary">Edit</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
+    @foreach (var budget in _budgets)
+    {
+        <MudItem xs="12" md="6" lg="4">
+            <MudCard>
+                <MudCardContent>
+                    <div class="d-flex justify-space-between align-center mb-2">
+                        <MudText Typo="Typo.h6">@budget.Name</MudText>
+                        <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(budget.Status)">
+                            @budget.Status.ToString()
+                        </MudChip>
+                    </div>
+                    
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-2">
+                        @GetPeriodText(budget.PeriodType, budget.StartDate, budget.EndDate)
+                    </MudText>
+                    
+                    @{
+                        var utilization = GetBudgetUtilization(budget);
+                    }
+                    <MudProgressLinear Value="@((double)utilization.Percentage)" Color="@GetUtilizationColor(utilization.Percentage)" Class="my-2" />
+                    
+                    <div class="d-flex justify-space-between align-center">
+                        <MudText Typo="Typo.body2">
+                            @($"{utilization.Spent:C} / {budget.TotalBudgetAmount:C}")
+                        </MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                            @($"{utilization.Percentage:F1}%")
+                        </MudText>
+                    </div>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Size="Size.Small" Color="Color.Primary" OnClick="@(() => ViewBudgetDetails(budget))">
+                        View Details
+                    </MudButton>
+                    <MudButton Size="Size.Small" Color="Color.Secondary" OnClick="@(() => EditBudget(budget))">
+                        Edit
+                    </MudButton>
+                    <MudIconButton Icon="Icons.Material.Filled.Delete" 
+                                   Size="Size.Small" 
+                                   Color="Color.Error"
+                                   OnClick="@(() => DeleteBudgetAsync(budget))" />
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    }
 </MudGrid>
 
-<MudPaper Class="pa-4 mt-6">
-    <MudText Typo="Typo.h6" GutterBottom="true">Budget Overview</MudText>
-    <MudText Typo="Typo.body2" Color="Color.Secondary">
-        This is a placeholder page. Budget management functionality will be implemented here with:
-    </MudText>
-    <MudList T="string">
-        <MudListItem Icon="Icons.Material.Filled.Check" Text="Budget creation and editing" />
-        <MudListItem Icon="Icons.Material.Filled.Check" Text="Category allocation" />
-        <MudListItem Icon="Icons.Material.Filled.Check" Text="Budget tracking and alerts" />
-        <MudListItem Icon="Icons.Material.Filled.Check" Text="Progress visualization" />
-        <MudListItem Icon="Icons.Material.Filled.Check" Text="Budget analysis and insights" />
-    </MudList>
-</MudPaper>
+@if (!_budgets.Any() && !_isLoading)
+{
+    <MudPaper Class="pa-8 mt-6 text-center">
+        <MudIcon Icon="Icons.Material.Filled.AccountBalance" Size="Size.Large" Color="Color.Secondary" />
+        <MudText Typo="Typo.h6" Class="mt-4" Color="Color.Secondary">No Budgets Yet</MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
+            Get started by creating your first budget to track your financial goals.
+        </MudText>
+        <MudButton Variant="Variant.Filled" 
+                   Color="Color.Primary" 
+                   StartIcon="@Icons.Material.Filled.Add"
+                   Href="/budgets/create">
+            Create Your First Budget
+        </MudButton>
+    </MudPaper>
+}
 
 @code {
-    // Placeholder - will implement budget logic here
+    private List<BudgetModel> _budgets = new();
+    private bool _isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadBudgetsAsync();
+    }
+
+    private async Task LoadBudgetsAsync()
+    {
+        _isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var budgets = await SdkService.Budgets.GetBudgetsAsync();
+            _budgets = budgets.ToList();
+            Logger.LogInformation("Loaded {Count} budgets using SDK", _budgets.Count);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            Logger.LogWarning("User is not authenticated");
+            Snackbar.Add("Authentication required. Please log in.", Severity.Warning);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to load budgets");
+            Snackbar.Add("Failed to load budgets", Severity.Error);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private Color GetStatusColor(BudgetStatus status)
+    {
+        return status switch
+        {
+            BudgetStatus.Active => Color.Success,
+            BudgetStatus.Inactive => Color.Secondary,
+            BudgetStatus.Completed => Color.Info,
+            _ => Color.Default
+        };
+    }
+
+    private string GetPeriodText(BudgetPeriodType periodType, DateTime? startDate, DateTime? endDate)
+    {
+        var period = periodType switch
+        {
+            BudgetPeriodType.Monthly => "Monthly",
+            BudgetPeriodType.Quarterly => "Quarterly", 
+            BudgetPeriodType.Yearly => "Yearly",
+            _ => "Custom"
+        };
+        
+        return $"{period} • {startDate:MMM dd} - {endDate:MMM dd, yyyy}";
+    }
+
+    private (decimal Spent, decimal Percentage) GetBudgetUtilization(BudgetModel budget)
+    {
+        // This would typically come from budget categories or spending data
+        // For now, simulate some spending data
+        var spent = budget.TotalBudgetAmount * 0.65m; // Simulate 65% usage
+        var percentage = budget.TotalBudgetAmount > 0 ? (spent / budget.TotalBudgetAmount) * 100 : 0;
+        
+        return (spent, Math.Min(percentage, 100));
+    }
+
+    private Color GetUtilizationColor(decimal percentage)
+    {
+        return percentage switch
+        {
+            <= 50 => Color.Success,
+            <= 75 => Color.Warning,
+            <= 90 => Color.Error,
+            _ => Color.Dark
+        };
+    }
+
+    private void ViewBudgetDetails(BudgetModel budget)
+    {
+        // Navigate to budget details page
+        // For now, show a message
+        Snackbar.Add($"Viewing details for {budget.Name}", Severity.Info);
+    }
+
+    private void EditBudget(BudgetModel budget)
+    {
+        // Navigate to edit budget page
+        // For now, show a message
+        Snackbar.Add($"Editing {budget.Name}", Severity.Info);
+    }
+
+    private async Task DeleteBudgetAsync(BudgetModel budget)
+    {
+        var messageBox = await DialogService.ShowMessageBox("Delete Budget", 
+            $"Are you sure you want to delete the budget '{budget.Name}'? This action cannot be undone.",
+            yesText: "Delete", 
+            noText: "Cancel",
+            options: new DialogOptions() { CloseButton = true });
+
+        if (messageBox == true)
+        {
+            try
+            {
+                await SdkService.Budgets.DeleteBudgetAsync(budget.Id);
+                
+                Snackbar.Add("Budget deleted successfully", Severity.Success);
+                await LoadBudgetsAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to delete budget");
+                Snackbar.Add("Failed to delete budget", Severity.Error);
+            }
+        }
+    }
 } 
