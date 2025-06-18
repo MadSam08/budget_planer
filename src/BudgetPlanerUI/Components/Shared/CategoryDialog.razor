@@ -1,7 +1,6 @@
 @using BudgetPlaner.Contracts.Api.Category
 @using BudgetPlaner.UI.Services
 @using CategoryTypes = BudgetPlaner.Contracts.Api.Category.CategoryTypes
-@inherits OwningComponentBase
 
 <MudDialog @ref="MudDialog">
     <DialogContent>
@@ -61,18 +60,15 @@
     [Parameter] public bool IsEdit { get; set; }
     [Inject] private ISnackbar Snackbar { get; set; } = null!;
     [Inject] private ILogger<CategoryDialog> Logger { get; set; } = null!;
+    [Inject] private IBudgetPlanerSdkService SdkService { get; set; } = null!;
 
     private MudDialog? MudDialog { get; set; }
-    private IBudgetPlanerSdkService? _sdkService;
 
     private CategoryRequest _category = new() { Id = "", Name = "", CategoryTypes = CategoryTypes.Default };
     private bool _isSubmitting = false;
 
     protected override async Task OnInitializedAsync()
     {
-        // Get the SDK service using OwningComponentBase.ScopedServices
-        _sdkService = ScopedServices.GetRequiredService<IBudgetPlanerSdkService>();
-
         if (Category != null && IsEdit)
         {
             _category = new CategoryRequest
@@ -106,14 +102,14 @@
             bool success;
             if (IsEdit)
             {
-                await _sdkService!.Categories.UpdateCategoryAsync(_category.Id, _category);
+                await SdkService.Categories.UpdateCategoryAsync(_category.Id, _category);
                 success = true;
                 Snackbar.Add("Category updated successfully", Severity.Success);
                 Logger.LogInformation("Category updated successfully: {CategoryId}", _category.Id);
             }
             else
             {
-                await _sdkService!.Categories.CreateCategoryAsync(_category);
+                await SdkService.Categories.CreateCategoryAsync(_category);
                 success = true;
                 Snackbar.Add("Category created successfully", Severity.Success);
                 Logger.LogInformation("Category created successfully: {CategoryName}", _category.Name);

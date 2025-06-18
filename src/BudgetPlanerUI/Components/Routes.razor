@@ -1,7 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using BudgetPlaner.UI.Components.Pages.Account
+
 <Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
-        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(AppLayout)">
             <NotAuthorized>
                 <RedirectToLogin/>
             </NotAuthorized>

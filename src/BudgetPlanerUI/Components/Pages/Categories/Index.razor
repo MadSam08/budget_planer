@@ -1,18 +1,16 @@
 @page "/categories"
+@layout AppLayout
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
 @using BudgetPlaner.Contracts.Api.Category
-@using BudgetPlaner.UI.Services
-@using BudgetPlaner.UI.Components.Shared
 @using CategoryTypes = BudgetPlaner.Contracts.Api.Category.CategoryTypes
 @attribute [Authorize]
-@inherits OwningComponentBase
 
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject ILogger<Index> Logger
+@inject IBudgetPlanerSdkService SdkService
 
-<PageTitle>Categories - Budget Planner (SDK)</PageTitle>
+<PageTitle>Categories</PageTitle>
 
 <div class="d-flex justify-space-between align-center mb-6">
     <div>
@@ -208,9 +206,6 @@
 }
 
 @code {
-    // SDK service resolved using OwningComponentBase.ScopedServices
-    private IBudgetPlanerSdkService? _sdkService;
-    
     private List<CategoryModel> _categories = new();
     private List<CategoryModel> _incomeCategories = new();
     private List<CategoryModel> _expenseCategories = new();
@@ -219,8 +214,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Get the SDK service using OwningComponentBase.ScopedServices
-        _sdkService = ScopedServices.GetRequiredService<IBudgetPlanerSdkService>();
         await LoadCategoriesAsync();
     }
 
@@ -231,8 +224,7 @@
 
         try
         {
-            // Use the SDK service directly - authentication is handled automatically by Refit
-            var categories = await _sdkService!.Categories.GetCategoriesAsync();
+            var categories = await SdkService.Categories.GetCategoriesAsync();
             _categories = categories.ToList();
             
             GroupCategories();
@@ -329,7 +321,7 @@
         {
             try
             {
-                await _sdkService!.Categories.DeleteCategoryAsync(category.Id);
+                await SdkService.Categories.DeleteCategoryAsync(category.Id);
                 
                 Snackbar.Add("Category deleted successfully", Severity.Success);
                 await LoadCategoriesAsync();

@@ -8,19 +8,19 @@
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
         <MudText Typo="Typo.h5" Class="ml-3">Budget Planner</MudText>
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                <MudMenu Icon="Icons.Material.Filled.AccountCircle" Color="Color.Inherit">
-                    <MudMenuItem Icon="Icons.Material.Filled.Person">
+                <MudMenu Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Inherit">
+                    <MudMenuItem Icon="@Icons.Material.Filled.Person">
                         <MudText>@context.User.Identity?.Name</MudText>
                     </MudMenuItem>
                     <MudDivider />
-                    <MudMenuItem Icon="Icons.Material.Filled.Settings" Href="/settings">Settings</MudMenuItem>
-                    <MudMenuItem Icon="Icons.Material.Filled.Logout" Href="/logout">Sign Out</MudMenuItem>
+                    <MudMenuItem Icon="@Icons.Material.Filled.Settings" Href="/settings">Settings</MudMenuItem>
+                    <MudMenuItem Icon="@Icons.Material.Filled.Logout" Href="/logout">Sign Out</MudMenuItem>
                 </MudMenu>
             </Authorized>
             <NotAuthorized>
