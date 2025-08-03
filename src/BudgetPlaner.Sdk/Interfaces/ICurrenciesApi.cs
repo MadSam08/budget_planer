@@ -1,10 +1,11 @@
 using BudgetPlaner.Contracts.Api;
+using BudgetPlaner.Contracts.Api.Loan;
 using BudgetPlaner.Sdk.Constants;
 using Refit;
 
 namespace BudgetPlaner.Sdk.Interfaces;
 
-[Headers("Authorization: Bearer")]
+[Headers("Authorization: Bearer","Content-Type: application/json; charset=UTF-8", "Accept: application/json")]
 public interface ICurrenciesApi
 {
     [Get(ApiEndpoints.Currencies.GetAll)]

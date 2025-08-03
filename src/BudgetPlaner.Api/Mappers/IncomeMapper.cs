@@ -7,22 +7,22 @@ namespace BudgetPlaner.Api.Mappers;
 
 public static class IncomeMapper
 {
-    public static IncomeEntity MapToEntity(this IncomeModel model)
+    public static IncomeEntity MapToEntity(this IncomeRequest request)
     {
         return new IncomeEntity
         {
-            Description = model.Description,
+            Description = request.Description,
             UserId = "",
-            CurrencyId = model.CurrencyId,
-            Value = model.Value,
-            CategoryId = model.CategoryId,
-            ActualDateOfIncome = model.ActualDateOfIncome
+            CurrencyId = request.CurrencyId,
+            Value = request.Value,
+            CategoryId = request.CategoryId,
+            ActualDateOfIncome = request.ActualDateOfIncome
         };
     }
 
-    public static IncomeModel MapToModel(this IncomeEntity entity, SqidsEncoder<int> sqids)
+    public static IncomeRequest MapToModel(this IncomeEntity entity, SqidsEncoder<int> sqids)
     {
-        return new IncomeModel
+        return new IncomeRequest
         {
             Id = sqids.Encode(entity.Id),
             Description = entity.Description,
@@ -35,10 +35,10 @@ public static class IncomeMapper
         };
     }
 
-    public static IEnumerable<IncomeModel> MapToModel(this IEnumerable<IncomeEntity> entity,
+    public static IEnumerable<IncomeRequest> MapToModel(this IEnumerable<IncomeEntity> entity,
         SqidsEncoder<int> sqids)
     {
-        return entity.Select(x => new IncomeModel
+        return entity.Select(x => new IncomeRequest
         {
             Id = sqids.Encode(x.Id),
             Description = x.Description,

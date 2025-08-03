@@ -2,6 +2,7 @@
 @layout AppLayout
 @using Microsoft.AspNetCore.Authorization
 @using BudgetPlaner.Contracts.Api
+@using BudgetPlaner.Contracts.Api.Loan
 @rendermode InteractiveServer
 @attribute [Authorize]
 @inject ISnackbar Snackbar
@@ -149,7 +150,7 @@
 
         var result = await dialog.Result;
         
-        if (!result.Canceled)
+        if (!(result is { Canceled: true }))
         {
             await LoadCurrencies();
         }

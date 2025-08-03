@@ -4,33 +4,33 @@ using Refit;
 
 namespace BudgetPlaner.Sdk.Interfaces;
 
-[Headers("Authorization: Bearer")]
+[Headers("Authorization: Bearer","Content-Type: application/json; charset=UTF-8", "Accept: application/json")]
 public interface IBudgetsApi
 {
     [Get(ApiEndpoints.Budgets.GetAll)]
-    Task<IEnumerable<BudgetModel>> GetBudgetsAsync();
+    Task<IApiResponse<IEnumerable<BudgetResponse>>> GetBudgetsAsync();
 
     [Get(ApiEndpoints.Budgets.Get)]
-    Task<BudgetModel> GetBudgetAsync(int id);
+    Task<IApiResponse<BudgetRequest>> GetBudgetAsync(int id);
 
     [Post(ApiEndpoints.Budgets.Create)]
-    Task<BudgetModel> CreateBudgetAsync([Body] BudgetModel request);
+    Task<IApiResponse> CreateBudgetAsync([Body] BudgetRequest request);
 
     [Put(ApiEndpoints.Budgets.Update)]
-    Task<BudgetModel> UpdateBudgetAsync(int id, [Body] BudgetModel request);
+    Task<IApiResponse> UpdateBudgetAsync(int id, [Body] BudgetRequest request);
 
     [Delete(ApiEndpoints.Budgets.Delete)]
-    Task DeleteBudgetAsync(int id);
+    Task<IApiResponse> DeleteBudgetAsync(string id);
 
     // Budget Categories - Nested Resources
     [Get(ApiEndpoints.Budgets.GetCategories)]
-    Task<IEnumerable<BudgetCategoryModel>> GetBudgetCategoriesAsync(int budgetId);
+    Task<IEnumerable<BudgetCategoryRequest>> GetBudgetCategoriesAsync(int budgetId);
 
     [Post(ApiEndpoints.Budgets.AddCategory)]
-    Task<BudgetCategoryModel> AddCategoryToBudgetAsync(int budgetId, [Body] BudgetCategoryModel request);
+    Task<BudgetCategoryRequest> AddCategoryToBudgetAsync(int budgetId, [Body] BudgetCategoryRequest request);
 
     [Put(ApiEndpoints.Budgets.UpdateCategory)]
-    Task<BudgetCategoryModel> UpdateBudgetCategoryAsync(int budgetId, int categoryId, [Body] BudgetCategoryModel request);
+    Task<BudgetCategoryRequest> UpdateBudgetCategoryAsync(int budgetId, int categoryId, [Body] BudgetCategoryRequest request);
 
     [Delete(ApiEndpoints.Budgets.RemoveCategory)]
     Task RemoveCategoryFromBudgetAsync(int budgetId, int categoryId);
@@ -40,5 +40,5 @@ public interface IBudgetsApi
     Task<object> GetBudgetUtilizationAsync(int id);
 
     [Get(ApiEndpoints.Budgets.GetOverBudget)]
-    Task<IEnumerable<BudgetCategoryModel>> GetOverBudgetCategoriesAsync(int id);
+    Task<IEnumerable<BudgetCategoryRequest>> GetOverBudgetCategoriesAsync(int id);
 } 

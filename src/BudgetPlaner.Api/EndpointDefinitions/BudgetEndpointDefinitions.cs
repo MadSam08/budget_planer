@@ -5,6 +5,10 @@ using BudgetPlaner.Domain;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using BudgetPlaner.Api.Constants.EndpointNames;
+using BudgetPlaner.Api.Extensions;
+using BudgetPlaner.Api.Mappers;
+using BudgetPlaner.Contracts.Api.Budget;
+using Sqids;
 
 namespace BudgetPlaner.Api.EndpointDefinitions;
 
@@ -41,34 +45,36 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
     }
 
     private static async Task<IResult> CreateBudget(
-        [FromBody] BudgetEntity budget,
+        [FromBody] BudgetRequest budget,
         [FromServices] IBudgetService budgetService,
-        ClaimsPrincipal user)
+        [FromServices] SqidsEncoder<int> sqidsEncoder, 
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = httpContextAccessor.GetUserIdFromClaims();
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
-        var createdBudget = await budgetService.CreateBudgetAsync(budget, userId);
+        var createdBudget = await budgetService.CreateBudgetAsync(budget.MapToEntity(sqidsEncoder), userId);
         return Results.Created($"/api/budgets/{createdBudget.Id}", createdBudget);
     }
 
     private static async Task<IResult> GetUserBudgets(
         [FromServices] IBudgetService budgetService,
-        ClaimsPrincipal user)
+        [FromServices] SqidsEncoder<int> sqidsEncoder,
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = httpContextAccessor.GetUserIdFromClaims();
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
         var budgets = await budgetService.GetUserBudgetsAsync(userId);
-        return Results.Ok(budgets);
+        return Results.Ok(budgets.MapToResponse(sqidsEncoder));
     }
 
     private static async Task<IResult> GetBudgetById(
         int id,
         [FromServices] IBudgetService budgetService,
-        ClaimsPrincipal user)
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = httpContextAccessor.GetUserIdFromClaims();
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
         var budget = await budgetService.GetBudgetByIdAsync(id, userId);
@@ -79,9 +85,9 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
         int id,
         [FromBody] BudgetEntity budget,
         [FromServices] IBudgetService budgetService,
-        ClaimsPrincipal user)
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = httpContextAccessor.GetUserIdFromClaims();
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
         budget.Id = id;
@@ -92,9 +98,9 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
     private static async Task<IResult> DeleteBudget(
         int id,
         [FromServices] IBudgetService budgetService,
-        ClaimsPrincipal user)
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = httpContextAccessor.GetUserIdFromClaims();
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
         var deleted = await budgetService.DeleteBudgetAsync(id, userId);
@@ -105,9 +111,9 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
         int budgetId,
         [FromBody] AddCategoryToBudgetRequest request,
         [FromServices] IBudgetService budgetService,
-        ClaimsPrincipal user)
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = httpContextAccessor.GetUserIdFromClaims();
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
         var budgetCategory = await budgetService.AddCategoryToBudgetAsync(
@@ -119,9 +125,9 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
         int categoryId,
         [FromBody] UpdateBudgetCategoryRequest request,
         [FromServices] IBudgetService budgetService,
-        ClaimsPrincipal user)
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = httpContextAccessor.GetUserIdFromClaims();
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
         var budgetCategory = await budgetService.UpdateBudgetCategoryAsync(
@@ -132,9 +138,9 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
     private static async Task<IResult> RemoveCategoryFromBudget(
         int categoryId,
         [FromServices] IBudgetService budgetService,
-        ClaimsPrincipal user)
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = httpContextAccessor.GetUserIdFromClaims();
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
         var removed = await budgetService.RemoveCategoryFromBudgetAsync(categoryId, userId);
@@ -144,9 +150,9 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
     private static async Task<IResult> GetBudgetUtilization(
         int id,
         [FromServices] IBudgetService budgetService,
-        ClaimsPrincipal user)
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = httpContextAccessor.GetUserIdFromClaims();
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
         var utilization = await budgetService.GetBudgetUtilizationAsync(id, userId);
@@ -156,9 +162,9 @@ public class BudgetEndpointDefinitions : IEndpointDefinition
     private static async Task<IResult> GetOverBudgetCategories(
         int id,
         [FromServices] IBudgetService budgetService,
-        ClaimsPrincipal user)
+        [FromServices] IHttpContextAccessor httpContextAccessor)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = httpContextAccessor.GetUserIdFromClaims();
         if (string.IsNullOrEmpty(userId)) return Results.Unauthorized();
 
         var categories = await budgetService.GetOverBudgetCategoriesAsync(id, userId);

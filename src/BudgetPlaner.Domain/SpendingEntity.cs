@@ -4,6 +4,8 @@ public record SpendingEntity : BaseEntity
 {
     public int CurrencyId { get; set; }
     public int CategoryId { get; set; }
+    
+    public int BudgetId { get; set; }
     public string? Description { get; set; }
     public decimal Value { get; set; }
     
@@ -21,6 +23,7 @@ public record SpendingEntity : BaseEntity
     
     public virtual CurrencyEntity? Currency { get; set; }
     public virtual CategoryEntity? Category { get; set; }
+    public virtual BudgetEntity? Budget { get; set; }
 }
 
 public enum SpendingType

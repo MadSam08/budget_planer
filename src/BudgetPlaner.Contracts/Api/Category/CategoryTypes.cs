@@ -2,7 +2,7 @@
 
 public enum CategoryTypes
 {
-    Default,
-    Income,
-    Spending
+    Default = 0,
+    Income = 1,
+    Spending = 2
 }

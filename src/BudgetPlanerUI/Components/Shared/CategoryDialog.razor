@@ -1,8 +1,7 @@
 @using BudgetPlaner.Contracts.Api.Category
-@using BudgetPlaner.UI.Services
 @using CategoryTypes = BudgetPlaner.Contracts.Api.Category.CategoryTypes
 
-<MudDialog @ref="MudDialog">
+<MudDialog>
     <DialogContent>
         <MudContainer Style="max-width: 500px;">
             <MudText Typo="Typo.h6" GutterBottom="true">
@@ -23,7 +22,7 @@
                     </MudItem>
 
                     <MudItem xs="12">
-                        <MudSelect @bind-Value="_category.CategoryTypes" Label="Category Type">
+                        <MudSelect T="CategoryTypes" @bind-Value="_category.CategoryTypes" Label="Category Type">
                             @foreach (var categoryTypes in Enum.GetValues(typeof(CategoryTypes)).Cast<CategoryTypes>())
                             {
                                 <MudSelectItem Value="categoryTypes">@categoryTypes</MudSelectItem>
@@ -37,7 +36,7 @@
     </DialogContent>
 
     <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton OnClick="@Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary"
                    Variant="Variant.Filled"
                    OnClick="@SubmitAsync"
@@ -58,11 +57,12 @@
 @code {
     [Parameter] public CategoryRequest? Category { get; set; }
     [Parameter] public bool IsEdit { get; set; }
+    
     [Inject] private ISnackbar Snackbar { get; set; } = null!;
     [Inject] private ILogger<CategoryDialog> Logger { get; set; } = null!;
     [Inject] private IBudgetPlanerSdkService SdkService { get; set; } = null!;
 
-    private MudDialog? MudDialog { get; set; }
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
 
     private CategoryRequest _category = new() { Id = "", Name = "", CategoryTypes = CategoryTypes.Default };
     private bool _isSubmitting = false;
@@ -80,7 +80,6 @@
         }
         else if (!IsEdit)
         {
-            // Generate new ID for create operation
             _category.Id = Guid.NewGuid().ToString();
         }
     }
@@ -98,26 +97,23 @@
 
         try
         {
-            // Use the SDK service directly - authentication is handled automatically by Refit
             bool success;
             if (IsEdit)
             {
                 await SdkService.Categories.UpdateCategoryAsync(_category.Id, _category);
                 success = true;
                 Snackbar.Add("Category updated successfully", Severity.Success);
-                Logger.LogInformation("Category updated successfully: {CategoryId}", _category.Id);
             }
             else
             {
                 await SdkService.Categories.CreateCategoryAsync(_category);
                 success = true;
                 Snackbar.Add("Category created successfully", Severity.Success);
-                Logger.LogInformation("Category created successfully: {CategoryName}", _category.Name);
             }
 
             if (success)
             {
-                await MudDialog?.CloseAsync(DialogResult.Ok(true));
+                MudDialog.Close(DialogResult.Ok(true));
             }
         }
         catch (UnauthorizedAccessException)
@@ -137,5 +133,9 @@
         }
     }
 
-    private async Task Cancel() => await MudDialog?.CloseAsync();
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
 } 

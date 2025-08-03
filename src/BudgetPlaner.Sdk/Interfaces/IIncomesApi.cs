@@ -4,20 +4,20 @@ using Refit;
 
 namespace BudgetPlaner.Sdk.Interfaces;
 
-[Headers("Authorization: Bearer")]
+[Headers("Authorization: Bearer","Content-Type: application/json; charset=UTF-8", "Accept: application/json")]
 public interface IIncomesApi
 {
     [Get(ApiEndpoints.Incomes.GetAll)]
-    Task<IEnumerable<IncomeModel>> GetIncomesAsync();
+    Task<IEnumerable<IncomeRequest>> GetIncomesAsync();
 
     [Get(ApiEndpoints.Incomes.Get)]
-    Task<IncomeModel> GetIncomeAsync(string id);
+    Task<IncomeRequest> GetIncomeAsync(string id);
 
     [Post(ApiEndpoints.Incomes.Create)]
-    Task<IncomeModel> CreateIncomeAsync([Body] IncomeModel request);
+    Task<IncomeRequest> CreateIncomeAsync([Body] IncomeRequest request);
 
     [Put(ApiEndpoints.Incomes.Update)]
-    Task<IncomeModel> UpdateIncomeAsync(string id, [Body] IncomeModel request);
+    Task<IncomeRequest> UpdateIncomeAsync(string id, [Body] IncomeRequest request);
 
     [Delete(ApiEndpoints.Incomes.Delete)]
     Task DeleteIncomeAsync(string id);

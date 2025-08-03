@@ -8,6 +8,7 @@ using RefreshRequest = Microsoft.AspNetCore.Identity.Data.RefreshRequest;
 
 namespace BudgetPlaner.Sdk.Interfaces;
 
+[Headers("Content-Type: application/json; charset=UTF-8", "Accept: application/json")]
 public interface IAuthApi
 {
     [Post(ApiEndpoints.Auth.SignIn)]

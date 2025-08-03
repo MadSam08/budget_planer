@@ -72,9 +72,10 @@ public class SpendingEndpointDefinitions : IEndpointDefinition
 
     private static async Task<IResult> AddSpending([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
         [FromServices] IHttpContextAccessor httpContextAccessor,
-        [FromBody] SpendingModel spendingModel)
+        [FromServices] SqidsEncoder<int> sqidsEncoder,
+        [FromBody] SpendingRequest spendingRequest)
     {
-        var entity = spendingModel.MapToEntity();
+        var entity = spendingRequest.MapToEntity(sqidsEncoder);
         var userId = httpContextAccessor.GetUserIdFromClaims();
 
         if (string.IsNullOrEmpty(userId))
@@ -91,7 +92,7 @@ public class SpendingEndpointDefinitions : IEndpointDefinition
 
     private static async Task<IResult> UpdateSpending([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
         [FromServices] IHttpContextAccessor httpContextAccessor,
-        [FromServices] SqidsEncoder<int> sqidsEncoder, string id, [FromBody] SpendingModel spendingModel)
+        [FromServices] SqidsEncoder<int> sqidsEncoder, string id, [FromBody] SpendingRequest spendingRequest)
     {
         var idDecoded = sqidsEncoder.Decode(id).SingleOrDefault();
         if (idDecoded == 0) return Results.BadRequest();
@@ -104,11 +105,11 @@ public class SpendingEndpointDefinitions : IEndpointDefinition
         await unitOfWork.Repository<SpendingEntity>()
             .UpdateAsync(x => x.Id == idDecoded && x.UserId.Equals(userId),
                 prop =>
-                    prop.SetProperty(c => c.Description, spendingModel.Description)
-                        .SetProperty(c => c.CurrencyId, spendingModel.CurrencyId)
-                        .SetProperty(c => c.CategoryId, spendingModel.CategoryId)
-                        .SetProperty(c => c.Value, spendingModel.Value)
-                        .SetProperty(c => c.ActualDateOfSpending, spendingModel.ActualDateOfSpending)
+                    prop.SetProperty(c => c.Description, spendingRequest.Description)
+                        .SetProperty(c => c.CurrencyId, sqidsEncoder.Decode(spendingRequest.CurrencyId).SingleOrDefault())
+                        .SetProperty(c => c.CategoryId, sqidsEncoder.Decode(spendingRequest.CategoryId).SingleOrDefault())
+                        .SetProperty(c => c.Value, spendingRequest.Value)
+                        .SetProperty(c => c.ActualDateOfSpending, spendingRequest.ActualDateOfSpending)
                         .SetProperty(c => c.UpdateDate, DateTime.UtcNow));
 
         return Results.NoContent();

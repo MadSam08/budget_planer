@@ -1,6 +1,5 @@
 @page "/income"
 @layout AppLayout
-@using Microsoft.AspNetCore.Authorization
 @rendermode InteractiveServer
 @attribute [Authorize]
 
@@ -13,19 +12,18 @@
     </div>
     <MudButton Variant="Variant.Filled" 
                Color="Color.Success" 
-               StartIcon="Icons.Material.Filled.Add"
+               StartIcon="@Icons.Material.Filled.Add"
                Href="/income/create">
         Add Income
     </MudButton>
 </div>
 
 <MudGrid Class="mb-6">
-    <!-- Summary Cards -->
     <MudItem xs="12" sm="6" md="3">
         <MudCard>
             <MudCardContent>
                 <div class="d-flex align-center">
-                    <MudIcon Icon="Icons.Material.Filled.TrendingUp" Color="Color.Success" Size="Size.Large" Class="mr-3" />
+                    <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Color="Color.Success" Size="Size.Large" Class="mr-3" />
                     <div>
                         <MudText Typo="Typo.h5">$4,500</MudText>
                         <MudText Typo="Typo.body2" Color="Color.Secondary">This Month</MudText>
@@ -39,7 +37,7 @@
         <MudCard>
             <MudCardContent>
                 <div class="d-flex align-center">
-                    <MudIcon Icon="Icons.Material.Filled.CalendarMonth" Color="Color.Primary" Size="Size.Large" Class="mr-3" />
+                    <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Primary" Size="Size.Large" Class="mr-3" />
                     <div>
                         <MudText Typo="Typo.h5">$4,200</MudText>
                         <MudText Typo="Typo.body2" Color="Color.Secondary">Average Monthly</MudText>
@@ -53,7 +51,7 @@
         <MudCard>
             <MudCardContent>
                 <div class="d-flex align-center">
-                    <MudIcon Icon="Icons.Material.Filled.Assessment" Color="Color.Warning" Size="Size.Large" Class="mr-3" />
+                    <MudIcon Icon="@Icons.Material.Filled.Assessment" Color="Color.Warning" Size="Size.Large" Class="mr-3" />
                     <div>
                         <MudText Typo="Typo.h5">$54,000</MudText>
                         <MudText Typo="Typo.body2" Color="Color.Secondary">Year to Date</MudText>
@@ -67,7 +65,7 @@
         <MudCard>
             <MudCardContent>
                 <div class="d-flex align-center">
-                    <MudIcon Icon="Icons.Material.Filled.Source" Color="Color.Tertiary" Size="Size.Large" Class="mr-3" />
+                    <MudIcon Icon="@Icons.Material.Filled.Source" Color="Color.Tertiary" Size="Size.Large" Class="mr-3" />
                     <div>
                         <MudText Typo="Typo.h5">3</MudText>
                         <MudText Typo="Typo.body2" Color="Color.Secondary">Income Sources</MudText>
@@ -84,8 +82,8 @@
             <MudText Typo="Typo.h6">Recent Income</MudText>
         </CardHeaderContent>
         <CardHeaderActions>
-            <MudIconButton Icon="Icons.Material.Filled.FilterList" Color="Color.Default" />
-            <MudIconButton Icon="Icons.Material.Filled.Search" Color="Color.Default" />
+            <MudIconButton Icon="@Icons.Material.Filled.FilterList" Color="Color.Default" />
+            <MudIconButton Icon="@Icons.Material.Filled.Search" Color="Color.Default" />
         </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent>
@@ -107,8 +105,8 @@
                 </MudTd>
                 <MudTd DataLabel="Date">@context.Date.ToString("MMM dd, yyyy")</MudTd>
                 <MudTd DataLabel="Actions">
-                    <MudIconButton Icon="Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" />
-                    <MudIconButton Icon="Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" />
                 </MudTd>
             </RowTemplate>
         </MudTable>
@@ -121,11 +119,11 @@
         This is a placeholder page. Income management functionality will include:
     </MudText>
     <MudList T="string">
-        <MudListItem Icon="Icons.Material.Filled.Check" Text="Add and categorize income sources" />
-        <MudListItem Icon="Icons.Material.Filled.Check" Text="Track recurring income" />
-        <MudListItem Icon="Icons.Material.Filled.Check" Text="Income trends and analytics" />
-        <MudListItem Icon="Icons.Material.Filled.Check" Text="Export income reports" />
-        <MudListItem Icon="Icons.Material.Filled.Check" Text="Tax preparation support" />
+        <MudListItem Icon="@Icons.Material.Filled.Check" Text="Add and categorize income sources" />
+        <MudListItem Icon="@Icons.Material.Filled.Check" Text="Track recurring income" />
+        <MudListItem Icon="@Icons.Material.Filled.Check" Text="Income trends and analytics" />
+        <MudListItem Icon="@Icons.Material.Filled.Check" Text="Export income reports" />
+        <MudListItem Icon="@Icons.Material.Filled.Check" Text="Tax preparation support" />
     </MudList>
 </MudPaper>
 

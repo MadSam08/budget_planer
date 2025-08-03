@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using BudgetPlaner.Api.Bootstrap;
 using BudgetPlaner.Api.Extensions;
 using BudgetPlaner.Application;
@@ -13,6 +14,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
+
+// Configure JSON serialization to handle enums properly
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+});
+
+// Also configure for MVC if you have any controllers
+builder.Services.Configure<Microsoft.AspNetCore.Mvc.JsonOptions>(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+});
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

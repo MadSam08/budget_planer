@@ -1,6 +1,6 @@
 ﻿namespace BudgetPlaner.Contracts.Api.Loan;
 
-public record IncomeModel
+public record IncomeRequest
 {
     public required string Id { get; set; }
     public int CurrencyId { get; set; }

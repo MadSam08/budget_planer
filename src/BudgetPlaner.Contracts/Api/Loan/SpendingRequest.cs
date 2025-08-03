@@ -1,10 +1,12 @@
 ﻿namespace BudgetPlaner.Contracts.Api.Loan;
 
-public record SpendingModel
+public record SpendingRequest
 {
     public required string Id { get; set; }
-    public int CurrencyId { get; set; }
-    public int CategoryId { get; set; }
+    public string CurrencyId { get; set; }
+    public string CategoryId { get; set; }
+    
+    public string BudgetId { get; set; }
 
     public string? Description { get; set; }
     public decimal Value { get; set; }

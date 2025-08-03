@@ -10,8 +10,6 @@ public record InsightModel
     public bool IsRead { get; set; }
     public bool ActionTaken { get; set; }
     public DateTime GeneratedDate { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
 }
 
 public enum InsightType

@@ -1,20 +1,18 @@
 namespace BudgetPlaner.Contracts.Api.Budget;
 
-public record BudgetModel
+public record BudgetRequest
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public int CurrencyId { get; set; }
+    public required string CurrencyId { get; set; } 
     public decimal TotalBudgetAmount { get; set; }
     public BudgetPeriodType PeriodType { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public BudgetStatus Status { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
 }
 
-public record BudgetCategoryModel
+public record BudgetCategoryRequest
 {
     public int Id { get; set; }
     public int BudgetId { get; set; }

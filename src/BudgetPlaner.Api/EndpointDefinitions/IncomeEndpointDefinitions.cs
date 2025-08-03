@@ -71,9 +71,9 @@ public class IncomeEndpointDefinitions : IEndpointDefinition
 
     private static async Task<IResult> AddIncome([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
         [FromServices] IHttpContextAccessor httpContextAccessor,
-        [FromBody] IncomeModel incomeModel)
+        [FromBody] IncomeRequest incomeRequest)
     {
-        var entity = incomeModel.MapToEntity();
+        var entity = incomeRequest.MapToEntity();
         var userId = httpContextAccessor.GetUserIdFromClaims();
 
         if (string.IsNullOrEmpty(userId))
@@ -90,7 +90,7 @@ public class IncomeEndpointDefinitions : IEndpointDefinition
 
     private static async Task<IResult> UpdateIncome([FromServices] IUnitOfWork<BudgetPlanerContext> unitOfWork,
         [FromServices] IHttpContextAccessor httpContextAccessor,
-        [FromServices] SqidsEncoder<int> sqidsEncoder, string id, [FromBody] IncomeModel categoryModel)
+        [FromServices] SqidsEncoder<int> sqidsEncoder, string id, [FromBody] IncomeRequest categoryRequest)
     {
         var idDecoded = sqidsEncoder.Decode(id).SingleOrDefault();
         if (idDecoded == 0) return Results.BadRequest();
@@ -103,11 +103,11 @@ public class IncomeEndpointDefinitions : IEndpointDefinition
         await unitOfWork.Repository<IncomeEntity>()
             .UpdateAsync(x => x.Id == idDecoded && x.UserId.Equals(userId),
                 prop =>
-                    prop.SetProperty(c => c.Description, categoryModel.Description)
-                        .SetProperty(c => c.CurrencyId, categoryModel.CurrencyId)
-                        .SetProperty(c => c.CategoryId, categoryModel.CategoryId)
-                        .SetProperty(c => c.Value, categoryModel.Value)
-                        .SetProperty(c => c.ActualDateOfIncome, categoryModel.ActualDateOfIncome)
+                    prop.SetProperty(c => c.Description, categoryRequest.Description)
+                        .SetProperty(c => c.CurrencyId, categoryRequest.CurrencyId)
+                        .SetProperty(c => c.CategoryId, categoryRequest.CategoryId)
+                        .SetProperty(c => c.Value, categoryRequest.Value)
+                        .SetProperty(c => c.ActualDateOfIncome, categoryRequest.ActualDateOfIncome)
                         .SetProperty(c => c.UpdateDate, DateTime.UtcNow));
 
         return Results.NoContent();

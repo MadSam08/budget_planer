@@ -4,6 +4,7 @@ using BudgetPlaner.Api.Constants.EndpointNames;
 using BudgetPlaner.Api.Extensions;
 using BudgetPlaner.Api.Mappers;
 using BudgetPlaner.Contracts.Api;
+using BudgetPlaner.Contracts.Api.Loan;
 using BudgetPlaner.Domain;
 using BudgetPlaner.Infrastructure.DatabaseContext;
 using BudgetPlaner.Infrastructure.UnitOfWork;

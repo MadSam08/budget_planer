@@ -52,7 +52,7 @@ namespace BudgetPlaner.Api.EndpointDefinitions
                 return Results.BadRequest();
             
             var response = await unitOfWork.Repository<CategoryEntity>()
-                .Where(x => x.UserId.Equals(userId)).ToListAsync(cancellationToken: cancellationToken);
+                .Where(x => x.UserId.Equals(userId) && !x.IsDeleted).ToListAsync(cancellationToken: cancellationToken);
 
             return Results.Ok(response.MapToModel(sqidsEncoder));
         }

@@ -1,7 +1,5 @@
 @page "/budgets"
 @layout AppLayout
-@using Microsoft.AspNetCore.Authorization
-@using BudgetPlaner.Contracts.Api.Budget
 @rendermode InteractiveServer
 @attribute [Authorize]
 
@@ -68,7 +66,7 @@
                     <MudButton Size="Size.Small" Color="Color.Secondary" OnClick="@(() => EditBudget(budget))">
                         Edit
                     </MudButton>
-                    <MudIconButton Icon="Icons.Material.Filled.Delete" 
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" 
                                    Size="Size.Small" 
                                    Color="Color.Error"
                                    OnClick="@(() => DeleteBudgetAsync(budget))" />
@@ -81,7 +79,7 @@
 @if (!_budgets.Any() && !_isLoading)
 {
     <MudPaper Class="pa-8 mt-6 text-center">
-        <MudIcon Icon="Icons.Material.Filled.AccountBalance" Size="Size.Large" Color="Color.Secondary" />
+        <MudIcon Icon="@Icons.Material.Filled.AccountBalance" Size="Size.Large" Color="Color.Secondary" />
         <MudText Typo="Typo.h6" Class="mt-4" Color="Color.Secondary">No Budgets Yet</MudText>
         <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-4">
             Get started by creating your first budget to track your financial goals.
@@ -96,7 +94,7 @@
 }
 
 @code {
-    private List<BudgetModel> _budgets = new();
+    private List<BudgetResponse> _budgets = [];
     private bool _isLoading = false;
 
     protected override async Task OnInitializedAsync()
@@ -111,8 +109,8 @@
 
         try
         {
-            var budgets = await SdkService.Budgets.GetBudgetsAsync();
-            _budgets = budgets.ToList();
+            var response = await SdkService.Budgets.GetBudgetsAsync();
+            _budgets = (response.Content ?? []).ToList();
             Logger.LogInformation("Loaded {Count} budgets using SDK", _budgets.Count);
         }
         catch (UnauthorizedAccessException)
@@ -156,11 +154,9 @@
         return $"{period} • {startDate:MMM dd} - {endDate:MMM dd, yyyy}";
     }
 
-    private (decimal Spent, decimal Percentage) GetBudgetUtilization(BudgetModel budget)
+    private (decimal Spent, decimal Percentage) GetBudgetUtilization(BudgetResponse budget)
     {
-        // This would typically come from budget categories or spending data
-        // For now, simulate some spending data
-        var spent = budget.TotalBudgetAmount * 0.65m; // Simulate 65% usage
+        var spent = budget.TotalBudgetAmount * 0.65m;
         var percentage = budget.TotalBudgetAmount > 0 ? (spent / budget.TotalBudgetAmount) * 100 : 0;
         
         return (spent, Math.Min(percentage, 100));
@@ -177,21 +173,21 @@
         };
     }
 
-    private void ViewBudgetDetails(BudgetModel budget)
+    private void ViewBudgetDetails(BudgetResponse budget)
     {
         // Navigate to budget details page
         // For now, show a message
         Snackbar.Add($"Viewing details for {budget.Name}", Severity.Info);
     }
 
-    private void EditBudget(BudgetModel budget)
+    private void EditBudget(BudgetResponse budget)
     {
         // Navigate to edit budget page
         // For now, show a message
         Snackbar.Add($"Editing {budget.Name}", Severity.Info);
     }
 
-    private async Task DeleteBudgetAsync(BudgetModel budget)
+    private async Task DeleteBudgetAsync(BudgetResponse budget)
     {
         var messageBox = await DialogService.ShowMessageBox("Delete Budget", 
             $"Are you sure you want to delete the budget '{budget.Name}'? This action cannot be undone.",

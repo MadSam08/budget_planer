@@ -1,4 +1,4 @@
-﻿namespace BudgetPlaner.Contracts.Api;
+﻿namespace BudgetPlaner.Contracts.Api.Loan;
 
 public record CurrencyModel
 {

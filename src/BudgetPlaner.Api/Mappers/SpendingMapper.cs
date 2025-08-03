@@ -7,44 +7,44 @@ namespace BudgetPlaner.Api.Mappers;
 
 public static class SpendingMapper
 {
-    public static SpendingEntity MapToEntity(this SpendingModel model)
+    public static SpendingEntity MapToEntity(this SpendingRequest request, SqidsEncoder<int> sqids)
     {
         return new SpendingEntity
         {
-            Description = model.Description,
+            Description = request.Description,
             UserId = "",
-            CurrencyId = model.CurrencyId,
-            Value = model.Value,
-            CategoryId = model.CategoryId,
-            ActualDateOfSpending = model.ActualDateOfSpending
+            CurrencyId = sqids.Decode(request.CurrencyId).SingleOrDefault(),
+            Value = request.Value,
+            CategoryId = sqids.Decode(request.CategoryId).SingleOrDefault(),
+            ActualDateOfSpending = request.ActualDateOfSpending
         };
     }
 
-    public static SpendingModel MapToModel(this SpendingEntity entity, SqidsEncoder<int> sqids)
+    public static SpendingRequest MapToModel(this SpendingEntity entity, SqidsEncoder<int> sqids)
     {
-        return new SpendingModel
+        return new SpendingRequest
         {
             Id = sqids.Encode(entity.Id),
             Description = entity.Description,
-            CurrencyId = entity.CurrencyId,
+            CurrencyId = sqids.Encode(entity.CurrencyId),
             Value = entity.Value,
-            CategoryId = entity.CategoryId,
+            CategoryId = sqids.Encode(entity.CategoryId),
             ActualDateOfSpending = entity.ActualDateOfSpending,
             CategoryName = entity.Category?.Name,
             CurrencyName = entity.Currency?.Name
         };
     }
 
-    public static IEnumerable<SpendingModel> MapToModel(this IEnumerable<SpendingEntity> entity,
+    public static IEnumerable<SpendingRequest> MapToModel(this IEnumerable<SpendingEntity> entity,
         SqidsEncoder<int> sqids)
     {
-        return entity.Select(x => new SpendingModel
+        return entity.Select(x => new SpendingRequest
         {
             Id = sqids.Encode(x.Id),
             Description = x.Description,
-            CurrencyId = x.CurrencyId,
+            CurrencyId = sqids.Encode(x.CurrencyId),
             Value = x.Value,
-            CategoryId = x.CategoryId,
+            CategoryId = sqids.Encode(x.CategoryId),
             ActualDateOfSpending = x.ActualDateOfSpending,
             CategoryName = x.Category?.Name,
             CurrencyName = x.Currency?.Name

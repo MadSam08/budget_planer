@@ -1,6 +1,4 @@
-@using BudgetPlaner.Contracts.Api
 @using Refit
-@using MudBlazor
 @inject ISnackbar Snackbar
 @inject IBudgetPlanerSdkService SdkService
 
@@ -38,10 +36,10 @@
         </MudContainer>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton OnClick="@Cancel">Cancel</MudButton>
         <MudButton Color="Color.Primary" 
                    Variant="Variant.Filled" 
-                   OnClick="HandleValidSubmit"
+                   OnClick="@HandleValidSubmit"
                    Disabled="@_isSubmitting">
             @if (_isSubmitting)
             {
@@ -57,9 +55,6 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] 
-    public IDialogService DialogService { get; set; } = default!;
-
     [Parameter] 
     public CurrencyModel Currency { get; set; } = new() { Name = string.Empty };
 
@@ -69,6 +64,8 @@
     private CurrencyModel model = new() { Name = string.Empty };
     private bool _isSubmitting = false;
     private bool _isEditing => !string.IsNullOrEmpty(Currency.Id);
+    
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
 
     protected override void OnInitialized()
     {
@@ -124,6 +121,7 @@
             }
 
             await OnCurrencyChanged.InvokeAsync(model);
+            MudDialog.Close(DialogResult.Ok(true));
             StateHasChanged();
         }
         catch (UnauthorizedAccessException)
@@ -143,7 +141,6 @@
 
     private void Cancel()
     {
-        // Handle cancel logic
-        StateHasChanged();
+        MudDialog.Cancel();
     }
 } 
